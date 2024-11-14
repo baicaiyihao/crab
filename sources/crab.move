@@ -1,11 +1,9 @@
-/*
-/// Module: crab
-module crab::crab;
-*/
-module crab::transfer_any_coin {
+module demo::transfer_any_coin {
     use std::string::{String, to_ascii};
+    use std::type_name::get;
+    use std::type_name::TypeName;
     use sui::balance::{Self,Balance};
-    use sui::coin::{Self,Coin,from_balance,into_balance};
+    use sui::coin::{Self,Coin,from_balance,into_balance, CoinMetadata};
     use sui::object::{Self, UID, ID};
     use sui::event;
     use sui::table;
@@ -21,7 +19,7 @@ module crab::transfer_any_coin {
     //pool info
     public struct Poolinfo has copy, store{
         object: ID,
-        cointype: String
+        cointype: TypeName
     }
 
     //store pool info
@@ -48,20 +46,19 @@ module crab::transfer_any_coin {
     public fun new_pool<X>(
         coinx: Coin<X>,
         pooltable:&mut PoolTable,
-        cointype:String,
         ctx: &mut TxContext
     ){
         let coin_balance = into_balance(coinx);
-        coin::get_name(coinx);
         let newpool = Pool<X> {
             id: object::new(ctx),
             coin_x: coin_balance,
         };
+        let typename = get<X>();
         let pool_id = object::id(&newpool);
 
         let poolinfo = Poolinfo{
             object:pool_id,
-            cointype:cointype
+            cointype:typename
         };
         vector::push_back(&mut pooltable.pool_map, poolinfo);
         transfer::share_object(newpool);
