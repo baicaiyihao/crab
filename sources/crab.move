@@ -1,4 +1,4 @@
-module demo::transfer_any_coin {
+module crab::transfer_any_coin {
     use std::type_name::get;
     use std::type_name::TypeName;
     use sui::balance::{Self,Balance};
