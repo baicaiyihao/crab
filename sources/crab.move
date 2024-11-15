@@ -7,7 +7,7 @@ module crab::transfer_any_coin {
     use sui::coin::{Self,Coin,from_balance,into_balance};
     use sui::object::{Self, UID, ID};
     use sui::tx_context::{TxContext, sender};
-    use sui::transfer::share_object;
+    use sui::transfer::{share_object, public_transfer};
 
 
 
@@ -78,7 +78,7 @@ module crab::transfer_any_coin {
         let pool_id = object::id(&newpool);
         add_poolinfo(pool_id,typename,pooltable);
         add_transferInRecord(coinvalue,typename,transferrecordpool,time,ctx);
-        transfer::share_object(newpool);
+        share_object(newpool);
     }
 
     public fun add_poolinfo(
@@ -150,6 +150,6 @@ module crab::transfer_any_coin {
         let coin_balance=balance::split(&mut pool.coin_x,transferinrecord.amount);
         let coin = from_balance(coin_balance,ctx);
         transferinrecord.is_claimed = transferinrecord.is_claimed + 1;
-        transfer::public_transfer(coin,sender(ctx));
+        public_transfer(coin,sender(ctx));
     }
 }
