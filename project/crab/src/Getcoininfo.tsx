@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { getUserProfile } from "./index.ts";
 import { CategorizedObjects, calculateTotalBalance } from "./utils/assetsHelpers.ts";
 import { SuiClient } from "@mysten/sui/client";
-import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TRANSFERRECORDPOOL } from "./constants.ts";
+import {TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TIME, TESTNET_TRANSFERRECORDPOOL} from "./constants.ts";
 
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
     const [userObjects, setUserObjects] = useState<CategorizedObjects | null>(null);
     const [tokenDecimals, setTokenDecimals] = useState<{ [coinType: string]: number }>({}); // 动态存储代币精度
+    const [demoNftId, setDemoNftId] = useState<string | null>(null); // 存储 DemoNFT 的 objectId
 
     const suiClient = new SuiClient({ url: "https://fullnode.testnet.sui.io/" }); // 初始化 Sui 客户端
 
@@ -39,6 +40,21 @@ export default function GetCoinInfo() {
                 const coinTypes = Object.keys(profile.coins || {});
                 for (const coinType of coinTypes) {
                     fetchTokenDecimals(coinType);
+                }
+
+                // 找到 DemoNFT 类型的 object
+                const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
+                    objectType.includes("DemoNFT")
+                );
+                if (demoNftObject) {
+                    const demoNftInstances = demoNftObject[1]; // DemoNFT 的所有实例
+                    if (Array.isArray(demoNftInstances) && demoNftInstances.length > 0) {
+                        setDemoNftId(demoNftInstances[0]?.data?.objectId || null); // 取第一个 DemoNFT 的 objectId
+                    } else {
+                        setDemoNftId(null);
+                    }
+                } else {
+                    setDemoNftId(null);
                 }
             } catch (error) {
                 console.error("Error fetching user profile:", error);
@@ -89,16 +105,19 @@ export default function GetCoinInfo() {
                                             <li key={idx}>{id}</li>
                                         ))}
                                     </ul>
-                                    {/* 调用 New_pool 组件 */}
-                                    <New_pool
-                                        crabPackageId={TESTNET_CRAB_PACKAGE_ID}
-                                        coinType={coinType}
-                                        coinObjects={coinObjectIds}
-                                        poolTableId={TESTNET_POOLTABLE}
-                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                        demoNftId={"0xcd4f93fa68e0f595ce44ba28ee30550ea233adf7e8dbb674fcf11a4f865c68ca"}
-                                        extraParam={"0x6"}
-                                    />
+                                    {demoNftId ? (
+                                        <New_pool
+                                            crabPackageId={TESTNET_CRAB_PACKAGE_ID}
+                                            coinType={coinType}
+                                            coinObjects={coinObjectIds}
+                                            poolTableId={TESTNET_POOLTABLE}
+                                            transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                            demoNftId={demoNftId} // 动态传入 DemoNFT ID
+                                            extraParam={TESTNET_TIME}
+                                        />
+                                    ) : (
+                                        <p style={{ color: "red" }}>No DemoNFT found</p>
+                                    )}
                                 </div>
                             );
                         })
