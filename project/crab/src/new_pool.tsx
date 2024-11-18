@@ -1,43 +1,84 @@
-
-
 import { Transaction } from "@mysten/sui/transactions";
-import { Button, Container } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "./networkConfig";
 
-export function New_pool() {
-  const tx = new Transaction();
-  const crabPackageId = useNetworkVariable("crabPackageId");
-  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+interface NewPoolProps {
+    crabPackageId: string;
+    coinType: string;
+    coinObjects: string[];
+    poolTableId: string;
+    transferRecordPoolId: string;
+    demoNftId: string;
+    extraParam: string;
+}
 
-  function New_pool() {
-    tx.moveCall({
-      typeArguments:["0x35f68d0404b0dd676561abf3049031616658b6fd33bb50d05f198a47ca112b6f::al17er_coin::AL17ER_COIN"],
-      arguments: [
-          tx.object("0x2ea2d9c9fb2bfc457b898dfb71e9b71bb630ad3f3eef1e14bbde4b796d853bb5"),
-          tx.object("0x01cf4eaf4590a1b4d83e14830bda715ac49df3bfc3e9d3b6e43707fb3f86a5b5"),
-          tx.object("0x42c6430ad9ae9c3bbeae8688ad393eb72c1cc912b1452434340eeb4d98dbe386"),
-          tx.object("0x2e50c6edfd5986f83621506a6287ef8c48ed8d863e2584750f561efe0593f708"),
-          tx.object("0x6"),
-      ],
-      target: `${crabPackageId}::demo::new_pool`,
-    });
+export function New_pool({
+                             crabPackageId,
+                             coinType,
+                             coinObjects,
+                             poolTableId,
+                             transferRecordPoolId,
+                             demoNftId,
+                             extraParam,
+                         }: NewPoolProps) {
+    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
-    signAndExecute({
-      transaction: tx,
-    });
-  }
+    async function executeNewPool() {
+        if (!crabPackageId || coinObjects.length === 0) {
+            console.error("Invalid input parameters for New_pool.");
+            return;
+        }
 
-  return (
-    <Container>
-      <Button
-        size="3"
-        onClick={New_pool}
-      >
-        创建coin pool
-      </Button>
-    </Container>
-  );
+        try {
+            const tx = new Transaction();
+
+            // 合并代币对象（如果有多个）
+            if (coinObjects.length > 1) {
+                tx.mergeCoins(
+                    tx.object(coinObjects[0]),
+                    coinObjects.slice(1).map(id => tx.object(id))
+                );
+            }
+
+            // 调用 new_pool 函数
+            tx.moveCall({
+                typeArguments: [coinType],
+                arguments: [
+                    tx.object(coinObjects[0]), // 主代币对象
+                    tx.object(poolTableId), // PoolTable ID
+                    tx.object(transferRecordPoolId), // TransferRecordPool ID
+                    tx.object(demoNftId), // DemoNFT ID
+                    tx.object(extraParam), // 额外参数
+                ],
+                target: `${crabPackageId}::demo::new_pool`,
+            });
+
+            tx.setGasBudget(100000000); // 设置 Gas 预算
+
+            const result = await signAndExecute({ transaction: tx });
+            console.log("New pool transaction successful:", result);
+        } catch (error) {
+            console.error("Error executing new_pool transaction:", error);
+        }
+    }
+
+    return (
+        <Button
+            size="3"
+            onClick={executeNewPool}
+            style={{
+                marginTop: "10px",
+                padding: "5px 10px",
+                backgroundColor: "#007bff",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+            }}
+        >
+            Add to New Pool
+        </Button>
+    );
 }
 
 export default New_pool;

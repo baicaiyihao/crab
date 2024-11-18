@@ -1,8 +1,10 @@
+import New_pool from "./new_pool";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "./index.ts";
 import { CategorizedObjects, calculateTotalBalance } from "./utils/assetsHelpers.ts";
-import { SuiClient } from "@mysten/sui/client"; // 引入 Sui 客户端
+import { SuiClient } from "@mysten/sui/client";
+import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TRANSFERRECORDPOOL } from "./constants.ts";
 
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
@@ -15,7 +17,7 @@ export default function GetCoinInfo() {
         if (tokenDecimals[coinType] != null) return; // 如果已经获取过精度，直接返回
         try {
             const metadata = await suiClient.getCoinMetadata({ coinType });
-            if (metadata && metadata.decimals != null) { // 检查 metadata 是否有效
+            if (metadata && metadata.decimals != null) {
                 setTokenDecimals(prev => ({ ...prev, [coinType]: metadata.decimals }));
             } else {
                 console.warn(`No metadata found for ${coinType}, using default decimals.`);
@@ -58,43 +60,51 @@ export default function GetCoinInfo() {
         <div style={{ marginTop: "20px" }}>
             {userObjects != null ? (
                 <div>
-                    <div>
-                        <h3>Token List</h3>
-                        {userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
-                            Object.entries(userObjects.coins).map(([coinType, coins], index) => {
-                                const coinObjectIds = coins.map(coin => coin.data?.objectId || "N/A");
-                                const totalBalance = calculateTotalBalance(coins);
+                    <h3>Token List</h3>
+                    {userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
+                        Object.entries(userObjects.coins).map(([coinType, coins], index) => {
+                            const coinObjectIds = coins.map(coin => coin.data?.objectId || "N/A");
+                            const totalBalance = calculateTotalBalance(coins);
 
-                                const decimals = tokenDecimals[coinType] ?? 9; // 获取代币精度，默认为 9
-                                const formattedBalance = formatTokenBalance(
-                                    totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
-                                    decimals
-                                );
+                            const decimals = tokenDecimals[coinType] ?? 9; // 获取代币精度，默认为 9
+                            const formattedBalance = formatTokenBalance(
+                                totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
+                                decimals
+                            );
 
-                                return (
-                                    <div
-                                        key={index}
-                                        style={{
-                                            padding: "10px",
-                                            border: "1px solid #ddd",
-                                            marginBottom: "10px",
-                                        }}
-                                    >
-                                        <h4>Token Type: {coinType.split("::").pop()}</h4>
-                                        <p>Total Balance: {formattedBalance}</p>
-                                        <p>Object IDs:</p>
-                                        <ul>
-                                            {coinObjectIds.map((id, idx) => (
-                                                <li key={idx}>{id}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p>No tokens found</p>
-                        )}
-                    </div>
+                            return (
+                                <div
+                                    key={index}
+                                    style={{
+                                        padding: "10px",
+                                        border: "1px solid #ddd",
+                                        marginBottom: "10px",
+                                    }}
+                                >
+                                    <h4>Token Type: {coinType.split("::").pop()}</h4>
+                                    <p>Total Balance: {formattedBalance}</p>
+                                    <p>Object IDs:</p>
+                                    <ul>
+                                        {coinObjectIds.map((id, idx) => (
+                                            <li key={idx}>{id}</li>
+                                        ))}
+                                    </ul>
+                                    {/* 调用 New_pool 组件 */}
+                                    <New_pool
+                                        crabPackageId={TESTNET_CRAB_PACKAGE_ID}
+                                        coinType={coinType}
+                                        coinObjects={coinObjectIds}
+                                        poolTableId={TESTNET_POOLTABLE}
+                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                        demoNftId={"0xcd4f93fa68e0f595ce44ba28ee30550ea233adf7e8dbb674fcf11a4f865c68ca"}
+                                        extraParam={"0x6"}
+                                    />
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <p>No tokens found</p>
+                    )}
                 </div>
             ) : (
                 <div style={{ textAlign: "center", marginTop: "50px" }}>
