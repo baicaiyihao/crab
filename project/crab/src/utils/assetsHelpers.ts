@@ -7,6 +7,9 @@ export interface CategorizedObjects { // 定义分类对象接口
   objects: { // 其他对象
     [objectType: string]: SuiObjectResponse[]; // 对象类型与其对应的对象数组
   };
+  coinObjects: { // 新增代币对象映射
+    [coinType: string]: string[]; // 每个代币类型对应的对象 ID 数组
+  };
 }
 
 export interface Balance { // 定义余额接口
@@ -28,6 +31,15 @@ export const categorizeSuiObjects = (objects: SuiObjectResponse[]): CategorizedO
         acc.coins[coinType] = []; // 初始化币种数组
       }
       acc.coins[coinType].push(obj); // 将对象添加到币种数组
+
+      // 新增逻辑：保存每个代币类型的对象 ID
+      if (!acc.coinObjects[coinType]) { // 如果代币类型的数组不存在
+        acc.coinObjects[coinType] = []; // 初始化数组
+      }
+      const objectId = obj.data?.objectId; // 获取对象 ID
+      if (objectId) { // 如果对象 ID 存在
+        acc.coinObjects[coinType].push(objectId); // 保存到数组中
+      }
     } else { // 如果是其他对象类型
       if (!acc.objects[type]) { // 如果对象类型不存在于累加器中
         acc.objects[type] = []; // 初始化对象数组
@@ -35,7 +47,7 @@ export const categorizeSuiObjects = (objects: SuiObjectResponse[]): CategorizedO
       acc.objects[type].push(obj); // 将对象添加到对象数组
     }
     return acc; // 返回累加器
-  }, { coins: {}, objects: {} }); // 初始化累加器
+  }, { coins: {}, objects: {}, coinObjects: {} }); // 初始化累加器
 };
 
 export const calculateTotalBalance = (coins: SuiObjectResponse[]): Balance => { // 计算总余额

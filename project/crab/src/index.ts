@@ -25,7 +25,7 @@ export const getUserProfile = async (address: string): Promise<CategorizedObject
     hasNextPage = response.hasNextPage; // 更新是否有下一页
     nextCursor = response.nextCursor ?? null; // 更新游标
   }
-  console.log(allObjects);
+  console.log(allObjects)
   return categorizeSuiObjects(allObjects); // 返回分类后的对象
 
 };

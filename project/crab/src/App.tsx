@@ -6,6 +6,7 @@ import New_pool from "./new_pool.tsx";
 import Deposit from "./deposit.tsx";
 import Withdraw from "./withdraw.tsx";
 import Getuserinfo from "./Getuserinfo.tsx";
+import Getcoininfo from "./Getcoininfo.tsx";
 
 function App() {
     useCurrentAccount();
@@ -29,6 +30,7 @@ function App() {
         </Box>
       </Flex>
         <Getuserinfo />
+        <Getcoininfo />
       <New_pool />
         <Deposit />
         <Withdraw />
