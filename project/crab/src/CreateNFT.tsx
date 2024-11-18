@@ -1,37 +1,48 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { Button, Container } from "@radix-ui/themes";
-import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "./networkConfig";
+import { TESTNET_USERNFTTABLE, TESTNET_USERSTATE } from "./constants.ts";
 
-export function CreateNFT() {
-  const tx = new Transaction();
-  const crabPackageId = useNetworkVariable("crabPackageId");
-  const USERNFTTABLE = tx.object("0xb74d98e94afd976a9f7cf8a09c0734e653401d278d41142f46c7a862eea8a97a");
-  const USERSTATE = tx.object("0xe0610afbe0eb63ddb93f7f2246fd17ed05e06bdddd0a2472e719e1120c20d50d");
+export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
+    const tx = new Transaction();
+    const crabPackageId = useNetworkVariable("crabPackageId");
+    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
-  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    async function create() {
+        tx.moveCall({
+            arguments: [tx.object(TESTNET_USERNFTTABLE), tx.object(TESTNET_USERSTATE)],
+            target: `${crabPackageId}::demo::mint_user_nft`,
+        });
 
-  function create() {
-    tx.moveCall({
-      arguments: [USERNFTTABLE, USERSTATE],
-      target: `${crabPackageId}::demo::mint_user_nft`,
-    });
+        try {
+            await signAndExecute({
+                transaction: tx,
+            });
+            console.log("NFT created successfully!");
+            if (onSuccess) {
+                onSuccess(); // 调用回调刷新数据
+            }
+        } catch (error) {
+            console.error("Error creating NFT:", error);
+        }
+    }
 
-    signAndExecute({
-      transaction: tx,
-    });
-  }
-
-  return (
-    <Container>
-      <Button
-        size="3"
-        onClick={create}
-      >
-        创建NFT
-      </Button>
-    </Container>
-  );
+    return (
+        <div style={{ padding: "20px" }}>
+            <button
+                style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    marginBottom: "20px",
+                }}
+                onClick={create}
+            >
+                创建NFT
+            </button>
+        </div>
+    );
 }
-
-export default CreateNFT;

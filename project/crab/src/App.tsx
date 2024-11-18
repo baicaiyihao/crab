@@ -1,19 +1,15 @@
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { isValidSuiObjectId } from "@mysten/sui/utils";
-import { Box, Container, Flex, Heading } from "@radix-ui/themes";
-import { useState } from "react";
-// import { Counter } from "./Counter";
-// import { CreateCounter } from "./CreateCounter";
-import { CreateNFT } from "./CreateNFT";
+import { Box, Flex, Heading } from "@radix-ui/themes";
+
+import CreateNFT from "./CreateNFT";
+import New_pool from "./new_pool.tsx";
+import Deposit from "./deposit.tsx";
+import Withdraw from "./withdraw.tsx";
+import Getuserinfo from "./Getuserinfo.tsx";
 
 function App() {
-  const currentAccount = useCurrentAccount();
-  const [counterId, setCounter] = useState(() => {
-    const hash = window.location.hash.slice(1);
-    return isValidSuiObjectId(hash) ? hash : null;
-  });
-
-  return (
+    useCurrentAccount();
+    return (
     <>
       <Flex
         position="sticky"
@@ -32,7 +28,10 @@ function App() {
           <ConnectButton />
         </Box>
       </Flex>
-      <CreateNFT />
+        <Getuserinfo />
+      <New_pool />
+        <Deposit />
+        <Withdraw />
     </>
   );
 }
