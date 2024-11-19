@@ -1,7 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../networkConfig.ts";
+import { useNetworkVariable } from "../config/networkConfig.ts";
 import { mergeCoins } from "../utils/mergeCoinsHelper.ts"; // 引入合并功能
 
 interface DepositProps {
@@ -56,8 +56,18 @@ export default function Deposit({
 
     return (
         <Container>
-            <Button size="3" onClick={Deposit_coin}>
-                回收代币
+            <Button
+                size="3"
+                onClick={Deposit_coin}
+                style={{
+                    backgroundColor: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                }}
+            >
+                Deposit
             </Button>
         </Container>
     );

@@ -1,8 +1,8 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { getUserProfile } from "./index.ts";
-import { CategorizedObjects } from "./utils/assetsHelpers.ts";
-import CreateNFT from "./components/CreateNFT.tsx";
+import { getUserProfile } from "../utils";
+import { CategorizedObjects } from "../utils/assetsHelpers.ts";
+import CreateNFT from "../components/CreateNFT.tsx";
 
 export default function Getuserinfo() {
     const account = useCurrentAccount();

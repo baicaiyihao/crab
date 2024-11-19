@@ -1,7 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../networkConfig.ts";
+import { useNetworkVariable } from "../config/networkConfig.ts";
 
 interface WithdrawProps {
     transferInRecordObject: string; // 转账记录对象 ID
