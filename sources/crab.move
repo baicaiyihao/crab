@@ -4,16 +4,16 @@ module demo::demo;
 */
 module crab::demo {
     use std::string::utf8;
+    use sui::balance::{Balance,zero,join,split};
     use std::type_name::get;
     use std::type_name::TypeName;
-    use sui::balance::{Balance};
     use sui::clock::{timestamp_ms, Clock};
     use sui::coin::{Self,Coin,from_balance,into_balance};
     use sui::display;
     use sui::package;
     use sui::object::{Self, UID, ID};
     use sui::tx_context::{TxContext, sender};
-    use sui::transfer::{share_object, public_transfer};
+    use sui::transfer::{share_object, public_transfer,transfer};
 
     const ERROR_INVALID_SENDER: u64 = 100;
     const ERROR_INVALID_ASSET_TYPE: u64 = 101;
@@ -26,6 +26,15 @@ module crab::demo {
     const DEPOSIT_POINT: u64 = 10;
 
     public struct DEMO has drop {}
+
+    public struct BankAccount has key{
+        id:UID,
+        suiBalance: Balance<0x2::sui::SUI>,
+    }
+
+    public struct AdminCap has key{
+        id:UID,
+    }
 
     //coin pool
     public struct CoinPool<phantom X> has key {
@@ -93,6 +102,15 @@ module crab::demo {
 
     //init
     fun init(witness: DEMO ,ctx:&mut TxContext){
+        let crabBank = BankAccount{
+            id: object::new(ctx),
+            suiBalance: zero<0x2::sui::SUI>(),
+        };
+
+        let admin_cap = AdminCap{
+            id:object::new(ctx),
+        };
+
         let pooltable = PoolTable{
             id:object::new(ctx),
             pool_map:vector::empty<Poolinfo>()
@@ -131,19 +149,44 @@ module crab::demo {
 
         public_transfer(publisher, sender(ctx));
         public_transfer(display, sender(ctx));
+        transfer(admin_cap,sender(ctx));
         share_object(pooltable);
         share_object(transferrecordpool);
         share_object(user_nft_table);
         share_object(userstate);
+        share_object(crabBank);
 
     }
 
+    public entry fun mintAdminCap(_:&AdminCap,to:address,ctx:&mut TxContext){
+        let admin_cap=AdminCap{
+            id:object::new(ctx)
+        };
+        transfer(admin_cap,to);
+    }
+
+    public entry fun withdraw_commision(_:&AdminCap, crabBank: &mut BankAccount,amount:u64,to:address,ctx: &mut TxContext){
+        let coin_balance=split(&mut crabBank.suiBalance,amount);
+        let coin=from_balance(coin_balance,ctx);
+        public_transfer(coin,to);
+    }
+
+    fun commision(crabBank:&mut BankAccount,dcoins:coin::Coin<0x2::sui::SUI>,ctx:&mut TxContext){
+        let mut into_balance = into_balance(dcoins);
+        let despoitCoin = split(&mut into_balance,1000000);
+        join(&mut crabBank.suiBalance,despoitCoin);
+        let coin_withdraw = from_balance(into_balance,ctx);
+        public_transfer(coin_withdraw,ctx.sender());
+    }
     //mint user nft
     public fun mint_user_nft(
+        crabBank: &mut BankAccount,
+        suiCoin: coin::Coin<0x2::sui::SUI>,
         user_nft_table: &mut UserNFTTable,
         userstate: &mut Userstate,
         ctx: &mut TxContext
     ){
+        commision(crabBank,suiCoin,ctx);
         userstate.count = userstate.count + 1;
 
         let nft = DemoNFT {
@@ -226,13 +269,16 @@ module crab::demo {
 
     //deposit coin
     public fun deposit<X>(
-        pool: &mut CoinPool<X>,
         coin_x: Coin<X>,
+        crabBank:&mut BankAccount,
+        suiCoin: coin::Coin<0x2::sui::SUI>,
+        pool: &mut CoinPool<X>,
         transferrecordpool:&mut TransferRecordPool,
         nft:&mut DemoNFT,
         time:& Clock,
         ctx:&mut TxContext
     ){
+        commision(crabBank,suiCoin,ctx);
         let coinvalue = coin_x.value();
         let typename = get<X>();
         nft.users_points = nft.users_points + DEPOSIT_POINT;
