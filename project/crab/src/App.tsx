@@ -1,8 +1,7 @@
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 import { Box, Flex, Heading } from "@radix-ui/themes";
 
-import CreateNFT from "./CreateNFT";
-import New_pool from "./new_pool.tsx";
+
 import Deposit from "./deposit.tsx";
 import Withdraw from "./withdraw.tsx";
 import Getuserinfo from "./Getuserinfo.tsx";
@@ -31,7 +30,6 @@ function App() {
       </Flex>
         <Getuserinfo />
         <Getcoininfo />
-      <New_pool />
         <Deposit />
         <Withdraw />
     </>
