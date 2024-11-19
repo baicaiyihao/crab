@@ -27,6 +27,7 @@ export default function GetCoinInfo() {
         }
     }
 
+
     async function refreshUserProfile() {
         if (account?.address) {
             try {
