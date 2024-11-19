@@ -9,13 +9,14 @@ import { fetchPoolIdForCoin } from "../utils/poolHelpers.ts"; // 导入 helper
 import { fetchTokenDecimals } from "../utils/tokenHelpers.ts";
 import suiClient from "../cli/suiClient.ts";
 
+const REFRESH_INTERVAL = 3000; // 每 30 秒刷新一次
+
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
     const [userObjects, setUserObjects] = useState<CategorizedObjects | null>(null);
     const [tokenDecimals, setTokenDecimals] = useState<{ [coinType: string]: number }>({});
     const [demoNftId, setDemoNftId] = useState<string | null>(null);
     const [coinPoolMap, setCoinPoolMap] = useState<{ [coinType: string]: string | null }>({});
-
 
     async function refreshUserProfile() {
         if (account?.address) {
@@ -35,7 +36,7 @@ export default function GetCoinInfo() {
                 }
 
                 const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
-                    objectType.includes("DemoNFT")
+                  objectType.includes("DemoNFT")
                 );
                 if (demoNftObject) {
                     const demoNftInstances = demoNftObject[1];
@@ -54,7 +55,14 @@ export default function GetCoinInfo() {
     }
 
     useEffect(() => {
+        // 初始加载时获取用户信息
         refreshUserProfile();
+
+        // 设置定时器，每 30 秒刷新一次
+        const intervalId = setInterval(refreshUserProfile, REFRESH_INTERVAL);
+
+        // 清理定时器
+        return () => clearInterval(intervalId);
     }, [account]);
 
     const formatTokenBalance = (balance: bigint, decimals: number): string => {
@@ -64,72 +72,71 @@ export default function GetCoinInfo() {
     };
 
     return (
-        <div style={{ marginTop: "20px" }}>
-            <h3>User Token List</h3>
-            {userObjects != null && userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
-                <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-                    <thead>
-                    <tr>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Token</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Total Balance</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {Object.entries(userObjects.coins).map(([coinType, coins], index) => {
-                        const coinObjectIds = coins.map(coin => coin.data?.objectId || "N/A");
-                        const totalBalance = calculateTotalBalance(coins);
+      <div style={{ marginTop: "20px" }}>
+          <h3>User Token List</h3>
+          {userObjects != null && userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
+            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
+                <thead>
+                <tr>
+                    <th style={{ border: "1px solid #ddd", padding: "8px" }}>Token</th>
+                    <th style={{ border: "1px solid #ddd", padding: "8px" }}>Total Balance</th>
+                    <th style={{ border: "1px solid #ddd", padding: "8px" }}>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {Object.entries(userObjects.coins).map(([coinType, coins], index) => {
+                    const coinObjectIds = coins.map(coin => coin.data?.objectId || "N/A");
+                    const totalBalance = calculateTotalBalance(coins);
 
-                        const decimals = tokenDecimals[coinType] ?? 9;
-                        const formattedBalance = formatTokenBalance(
-                            totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
-                            decimals
-                        );
-                        const poolId = coinPoolMap[coinType];
+                    const decimals = tokenDecimals[coinType] ?? 9;
+                    const formattedBalance = formatTokenBalance(
+                      totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
+                      decimals
+                    );
+                    const poolId = coinPoolMap[coinType];
 
-                        return (
-                            <tr key={index}>
-                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                    {coinType.split("::").pop()} {/* 提取代币名称 */}
-                                </td>
-                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                    {formattedBalance}
-                                </td>
-                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                    {demoNftId ? (
-                                        poolId ? (
-                                            <Deposit
-                                                coinType={coinType}
-                                                poolId={poolId}
-                                                coinObjects={coinObjectIds}
-                                                demoNftId={demoNftId}
-                                                transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                extraParam={TESTNET_TIME}
-                                            />
-                                        ) : (
-                                            <New_pool
-                                                crabPackageId={TESTNET_CRAB_PACKAGE_ID}
-                                                coinType={coinType}
-                                                coinObjects={coinObjectIds}
-                                                poolTableId={TESTNET_POOLTABLE}
-                                                transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                demoNftId={demoNftId}
-                                                extraParam={TESTNET_TIME}
-                                            />
-                                        )
-                                    ) : (
-                                        <p style={{ color: "red" }}>No DemoNFT found</p>
-                                    )}
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    </tbody>
-                </table>
-            ) : (
-                <p>No tokens found</p>
-            )}
-        </div>
+                    return (
+                      <tr key={index}>
+                          <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                              {coinType.split("::").pop()} {/* 提取代币名称 */}
+                          </td>
+                          <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                              {formattedBalance}
+                          </td>
+                          <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                              {demoNftId ? (
+                                poolId ? (
+                                  <Deposit
+                                    coinType={coinType}
+                                    poolId={poolId}
+                                    coinObjects={coinObjectIds}
+                                    demoNftId={demoNftId}
+                                    transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                    extraParam={TESTNET_TIME}
+                                  />
+                                ) : (
+                                  <New_pool
+                                    crabPackageId={TESTNET_CRAB_PACKAGE_ID}
+                                    coinType={coinType}
+                                    coinObjects={coinObjectIds}
+                                    poolTableId={TESTNET_POOLTABLE}
+                                    transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                    demoNftId={demoNftId}
+                                    extraParam={TESTNET_TIME}
+                                  />
+                                )
+                              ) : (
+                                <p style={{ color: "red" }}>No DemoNFT found</p>
+                              )}
+                          </td>
+                      </tr>
+                    );
+                })}
+                </tbody>
+            </table>
+          ) : (
+            <p>No tokens found</p>
+          )}
+      </div>
     );
-
 }

@@ -4,6 +4,8 @@ import { getUserProfile } from "../utils";
 import { CategorizedObjects } from "../utils/assetsHelpers.ts";
 import CreateNFT from "../components/CreateNFT.tsx";
 
+const REFRESH_INTERVAL = 3000; // 每 30 秒刷新一次
+
 export default function Getuserinfo() {
     const account = useCurrentAccount();
     const [userObjects, setUserObjects] = useState<CategorizedObjects | null>(null);
@@ -19,7 +21,7 @@ export default function Getuserinfo() {
 
                 // 检查是否存在 DemoNFT 对象
                 const demoNFT = Object.entries(profile.objects || {}).find(
-                    ([objectType]) => objectType.includes("DemoNFT")
+                  ([objectType]) => objectType.includes("DemoNFT")
                 );
 
                 if (demoNFT) {
@@ -35,51 +37,58 @@ export default function Getuserinfo() {
     }
 
     useEffect(() => {
-        refreshUserProfile(); // 初次加载时获取用户信息
+        // 初始加载时获取用户信息
+        refreshUserProfile();
+
+        // 设置定时器，每 30 秒刷新一次
+        const intervalId = setInterval(refreshUserProfile, REFRESH_INTERVAL);
+
+        // 清理定时器
+        return () => clearInterval(intervalId);
     }, [account]);
 
     return (
-        <div style={{ marginTop: "20px" }}>
-            {userObjects != null ? (
-                <div>
-                    {hasDemoNFT ? (
-                        <div>
-                            <h3>User info</h3>
-                            {Array.isArray(demoNFTData) && demoNFTData.length > 0 ? (
-                                demoNFTData.map((nft, index) => {
-                                    const fields = nft?.data?.content?.fields;
-                                    return (
-                                        <div
-                                            key={index}
-                                            style={{
-                                                padding: "10px",
-                                                border: "1px solid #ddd",
-                                                marginBottom: "10px",
-                                            }}
-                                        >
-                                            <p>Points: {fields?.users_points || "N/A"}</p>
-                                            <p>User ID: {fields?.userid || "N/A"}</p>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p>No valid DemoNFT data found</p>
-                            )}
-                        </div>
-                    ) : (
-                        <div style={{ textAlign: "center", marginTop: "50px" }}>
-                            <h3>No DemoNFT Found</h3>
-                            {/* 将刷新函数传递给 CreateNFT */}
-                            <CreateNFT onSuccess={refreshUserProfile} />
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div style={{ textAlign: "center", marginTop: "50px" }}>
-                    <h3>Welcome to Next.js Sui Dapp Template</h3>
-                    <h3>Please connect your wallet to view your assets</h3>
-                </div>
-            )}
-        </div>
+      <div style={{ marginTop: "20px" }}>
+          {userObjects != null ? (
+            <div>
+                {hasDemoNFT ? (
+                  <div>
+                      <h3>User info</h3>
+                      {Array.isArray(demoNFTData) && demoNFTData.length > 0 ? (
+                        demoNFTData.map((nft, index) => {
+                            const fields = nft?.data?.content?.fields;
+                            return (
+                              <div
+                                key={index}
+                                style={{
+                                    padding: "10px",
+                                    border: "1px solid #ddd",
+                                    marginBottom: "10px",
+                                }}
+                              >
+                                  <p>Points: {fields?.users_points || "N/A"}</p>
+                                  <p>User ID: {fields?.userid || "N/A"}</p>
+                              </div>
+                            );
+                        })
+                      ) : (
+                        <p>No valid DemoNFT data found</p>
+                      )}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center", marginTop: "50px" }}>
+                      <h3>No DemoNFT Found</h3>
+                      {/* 将刷新函数传递给 CreateNFT */}
+                      <CreateNFT onSuccess={refreshUserProfile} />
+                  </div>
+                )}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", marginTop: "50px" }}>
+                <h3>Welcome to Next.js Sui Dapp Template</h3>
+                <h3>Please connect your wallet to view your assets</h3>
+            </div>
+          )}
+      </div>
     );
 }

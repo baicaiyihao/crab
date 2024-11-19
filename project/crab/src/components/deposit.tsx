@@ -1,8 +1,9 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import {  useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../config/networkConfig.ts";
-import { mergeCoins } from "../utils/mergeCoinsHelper.ts"; // 引入合并功能
+import { mergeCoins } from "../utils/mergeCoinsHelper.ts";
+
 
 interface DepositProps {
     coinType: string;
@@ -23,6 +24,8 @@ export default function Deposit({
                         }: DepositProps) {
     const {mutate: signAndExecute} = useSignAndExecuteTransaction();
     const crabPackageId = useNetworkVariable("crabPackageId");
+    async function refreshUserProfile() {
+    }
 
     async function Deposit_coin() {
         try {
@@ -49,6 +52,7 @@ export default function Deposit({
             // 执行交易
             const result = await signAndExecute({transaction: tx});
             console.log("Deposit transaction executed:", result);
+            refreshUserProfile()
         } catch (error) {
             console.error("Error executing deposit transaction:", error);
         }
