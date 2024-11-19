@@ -1,6 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { Button } from "@radix-ui/themes";
+import {Button, Container} from "@radix-ui/themes";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { mergeCoins } from "../utils/mergeCoinsHelper.ts"; // 引入合并功能
+
 
 interface NewPoolProps {
     crabPackageId: string;
@@ -12,7 +14,7 @@ interface NewPoolProps {
     extraParam: string;
 }
 
-export function New_pool({
+export default function New_pool({
                              crabPackageId,
                              coinType,
                              coinObjects,
@@ -33,12 +35,7 @@ export function New_pool({
             const tx = new Transaction();
 
             // 合并代币对象（如果有多个）
-            if (coinObjects.length > 1) {
-                tx.mergeCoins(
-                    tx.object(coinObjects[0]),
-                    coinObjects.slice(1).map(id => tx.object(id))
-                );
-            }
+            mergeCoins(tx, coinObjects);
 
             // 调用 new_pool 函数
             tx.moveCall({
@@ -63,22 +60,11 @@ export function New_pool({
     }
 
     return (
-        <Button
-            size="3"
-            onClick={executeNewPool}
-            style={{
-                marginTop: "10px",
-                padding: "5px 10px",
-                backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-            }}
-        >
-            Add to New Pool
-        </Button>
+        <Container>
+            <Button size="3" onClick={executeNewPool}>
+                回收代币
+            </Button>
+        </Container>
     );
 }
 
-export default New_pool;

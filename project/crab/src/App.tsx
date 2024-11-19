@@ -2,10 +2,9 @@ import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 import { Box, Flex, Heading } from "@radix-ui/themes";
 
 
-import Deposit from "./deposit.tsx";
-import Withdraw from "./withdraw.tsx";
 import Getuserinfo from "./Getuserinfo.tsx";
 import Getcoininfo from "./Getcoininfo.tsx";
+import GetTransferInfo from "./GetTransferInfo.tsx";
 
 function App() {
     useCurrentAccount();
@@ -30,8 +29,7 @@ function App() {
       </Flex>
         <Getuserinfo />
         <Getcoininfo />
-        <Deposit />
-        <Withdraw />
+        <GetTransferInfo />
     </>
   );
 }
