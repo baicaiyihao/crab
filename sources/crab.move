@@ -22,9 +22,12 @@ module crab::demo {
     const ERROR_NOT_FOUND_NFT: u64 = 104;
     const ERROR_ALREADY_EXISTS: u64 = 105;
     const ERROR_ALREADY_HAS_NFT: u64 = 106;
+    const ERROR_ALREADY_VOTED: u64 = 107;
+    const ERROR_INVALID_AMOUNT: u64 = 108;
 
     const ONE_MONTH_IN_MS: u64 = 30 * 24 * 60 * 60 * 1000;
-    const POINT: u64 = 10;
+    const POINTS: u64 = 10;
+    const MARK_SCAM_POINTS: u64 = 5;
 
     public struct DEMO has drop {}
 
@@ -116,10 +119,15 @@ module crab::demo {
         ScamCoin_id: ID,
     }
 
+    public struct UserVote has copy,store {
+        user: address,
+        coin_type: TypeName,
+    }
     //Scamcoin pool
     public struct ScamCoinPool has key,store {
         id:UID,
         ScamCoin_map: vector<ScamCoininfo>,
+        user_votes: vector<UserVote>,
     }
 
 
@@ -148,6 +156,7 @@ module crab::demo {
         let scam_coin_pool = ScamCoinPool {
             id: object::new(ctx),
             ScamCoin_map: vector::empty<ScamCoininfo>(),
+            user_votes: vector::empty<UserVote>(),
         };
         let keys = vector[
             utf8(b"name"),
@@ -197,6 +206,7 @@ module crab::demo {
     //withdraw gaspool
     public fun withdraw_commision(admin_cap:&AdminCap, crabBank: &mut GasPool,amount:u64,to:address,ctx: &mut TxContext){
         assert!(sender(ctx) == object::owner(admin_cap.id), ERROR_INVALID_SENDER);
+        assert!(crabBank.suiBalance.value() > amount, ERROR_INVALID_AMOUNT);
         let coin_balance= crabBank.suiBalance.split(amount);
         let coin=from_balance(coin_balance,ctx);
         public_transfer(coin,to);
@@ -256,8 +266,8 @@ module crab::demo {
             checknum: 1
         };
         let scancoinid = object::id(&newscancoin);
-        add_Scaminfo(scancoinid,scamcointype,scamCoinPool);
-        nft.users_points = nft.users_points + POINT;
+        add_Scaminfo(scancoinid,scamcointype,scamCoinPool,ctx);
+        nft.users_points = nft.users_points + MARK_SCAM_POINTS;
         share_object(newscancoin);
     }
 
@@ -283,7 +293,7 @@ module crab::demo {
         let pool_id = object::id(&newpool);
         add_poolinfo(pool_id,typename,pooltable);
         add_transferInRecord_info(coinvalue,typename,transferrecordpool,time,ctx);
-        nft.users_points = nft.users_points + POINT;
+        nft.users_points = nft.users_points + POINTS;
         share_object(newpool);
     }
 
@@ -327,16 +337,38 @@ module crab::demo {
         };
     }
 
+    //check coin pool
+    public fun check_mark_scam(
+        typename: TypeName,
+        scampool:&mut ScamCoinPool,
+        ctx:&mut TxContext
+    ){
+        let mut i = 0;
+
+        // 遍历 user_votes 中的每个 UserVote
+        while (i < vector::length(&scam_coin_pool.user_votes)) {
+            let vote = &scampool.user_votes[i];
+            assert!(vote.coin_type == typename && vote.user != sender(ctx)  , ERROR_ALREADY_VOTED);
+            i = i + 1;
+        };
+    }
+
     public fun add_Scaminfo(
         scamcoin_id: ID,
         typename: TypeName,
         scampool:&mut ScamCoinPool,
+        ctx:&mut TxContext
     ){
         let scaminfo = ScamCoininfo{
             cointype:typename,
             ScamCoin_id:scamcoin_id
         };
+        let vote = UserVote {
+            user: sender(ctx),
+            coin_type: typename,
+        };
         vector::push_back(&mut scampool.ScamCoin_map, scaminfo);
+        vector::push_back(&mut scampool.user_votes, vote);
     }
 
     public fun add_poolinfo(
@@ -379,14 +411,17 @@ module crab::demo {
     public fun add_mark_scam(
         crabBank:&mut GasPool,
         suiCoin: coin::Coin<0x2::sui::SUI>,
-        scancoin: &mut ScamCoin,
+        scamcoin: &mut ScamCoin,
+        scampool: &mut ScamCoinPool,
         nft:&mut DemoNFT,
         ctx:&mut TxContext
     ){
         commision(crabBank,suiCoin,ctx);
+        let cointype = scamcoin.cointype;
+        check_scam(cointype,scampool);
 
-        scancoin.checknum = scancoin.checknum + 1;
-        nft.users_points = nft.users_points + POINT;
+        scamcoin.checknum = scamcoin.checknum + 1;
+        nft.users_points = nft.users_points + MARK_SCAM_POINTS;
     }
 
 
@@ -404,7 +439,7 @@ module crab::demo {
         commision(crabBank,suiCoin,ctx);
         let coinvalue = coin_x.value();
         let typename = get<X>();
-        nft.users_points = nft.users_points + POINT;
+        nft.users_points = nft.users_points + POINTS;
 
         coin::put(&mut pool.coin_x, coin_x);
         add_transferInRecord_info(coinvalue,typename,transferrecordpool,time,ctx);
@@ -433,7 +468,7 @@ module crab::demo {
 
         let coin_balance= pool.coin_x.split(transferinrecord.amount);
         let coin = from_balance(coin_balance,ctx);
-        nft.users_points = nft.users_points - POINT;
+        nft.users_points = nft.users_points - POINTS;
         transferinrecord.is_claimed = transferinrecord.is_claimed + 1;
         public_transfer(coin,sender(ctx));
     }
