@@ -2,7 +2,7 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 import {
   TESTNET_CRAB_PACKAGE_ID,
   MAINNET_CRAB_PACKAGE_ID,
-} from "./config/constants.ts";
+} from "./constants.ts";
 import { createNetworkConfig } from "@mysten/dapp-kit";
 
 const { networkConfig, useNetworkVariable, useNetworkVariables } =

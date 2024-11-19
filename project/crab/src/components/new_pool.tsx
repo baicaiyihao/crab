@@ -61,8 +61,18 @@ export default function New_pool({
 
     return (
         <Container>
-            <Button size="3" onClick={executeNewPool}>
-                回收代币
+            <Button
+                size="3"
+                onClick={executeNewPool}
+                style={{
+                    backgroundColor: "#007bff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                }}
+            >
+                Deposit
             </Button>
         </Container>
     );

@@ -1,13 +1,13 @@
-import New_pool from "./components/new_pool.tsx";
+import New_pool from "../components/new_pool.tsx";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { getUserProfile } from "./index.ts";
-import { CategorizedObjects, calculateTotalBalance } from "./utils/assetsHelpers.ts";
-import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TIME, TESTNET_TRANSFERRECORDPOOL } from "./constants.ts";
-import Deposit from "./components/deposit.tsx";
-import { fetchPoolIdForCoin } from "./utils/poolHelpers.ts"; // 导入 helper
-import { fetchTokenDecimals } from "./utils/tokenHelpers.ts";
-import suiClient from "./cli/suiClient.ts";
+import { getUserProfile } from "../utils";
+import { CategorizedObjects, calculateTotalBalance } from "../utils/assetsHelpers.ts";
+import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TIME, TESTNET_TRANSFERRECORDPOOL } from "../config/constants.ts";
+import Deposit from "../components/deposit.tsx";
+import { fetchPoolIdForCoin } from "../utils/poolHelpers.ts"; // 导入 helper
+import { fetchTokenDecimals } from "../utils/tokenHelpers.ts";
+import suiClient from "../cli/suiClient.ts";
 
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
