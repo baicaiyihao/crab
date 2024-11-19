@@ -1,7 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "./networkConfig";
-import { TESTNET_USERNFTTABLE, TESTNET_USERSTATE } from "./constants.ts";
+import { useNetworkVariable } from "../config/networkConfig.ts";
+import { TESTNET_USERNFTTABLE, TESTNET_USERSTATE } from "../config/constants.ts";
 
 export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
     const tx = new Transaction();

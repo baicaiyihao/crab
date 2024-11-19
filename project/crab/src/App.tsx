@@ -1,13 +1,12 @@
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { Box, Flex, Heading } from "@radix-ui/themes";
+import { Box, Flex, Heading, Container } from "@radix-ui/themes";
 
 
-import Deposit from "./deposit.tsx";
-import Withdraw from "./withdraw.tsx";
-import Getuserinfo from "./Getuserinfo.tsx";
-import Getcoininfo from "./Getcoininfo.tsx";
+import Getuserinfo from "./pages/Getuserinfo.tsx";
+import Getcoininfo from "./pages/Getcoininfo.tsx";
+import GetTransferInfo from "./pages/GetTransferInfo.tsx";
 
-function App() {
+export default function App() {
     useCurrentAccount();
     return (
     <>
@@ -21,19 +20,27 @@ function App() {
         }}
       >
         <Box>
-          <Heading>dApp Starter Template</Heading>
+          <Heading>Crab</Heading>
         </Box>
 
         <Box>
           <ConnectButton />
         </Box>
       </Flex>
-        <Getuserinfo />
-        <Getcoininfo />
-        <Deposit />
-        <Withdraw />
+
+      <Container>
+        <Flex direction="column" align="center" my="4">
+          <Box mb="4" width="100%">
+            <Getuserinfo />
+          </Box>
+          <Box mb="4" width="100%">
+            <Getcoininfo />
+          </Box>
+          <Box mb="4" width="100%">
+            <GetTransferInfo />
+          </Box>
+        </Flex>
+      </Container>
     </>
   );
 }
-
-export default App;
