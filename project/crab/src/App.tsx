@@ -7,7 +7,7 @@ import Getcoininfo from "./pages/Getcoininfo.tsx";
 import GetTransferInfo from "./pages/GetTransferInfo.tsx";
 
 export default function App() {
-    useCurrentAccount();
+    const currentAccount = useCurrentAccount();
     return (
     <>
       <Flex
@@ -31,13 +31,14 @@ export default function App() {
       <Container>
         <Flex direction="column" align="center" my="4">
           <Box mb="4" width="100%">
-            <Getuserinfo />
+            {/* 传递 currentAccount 作为参数 */}
+            <Getuserinfo currentAccount={currentAccount} />
           </Box>
           <Box mb="4" width="100%">
-            <Getcoininfo />
+            <Getcoininfo currentAccount={currentAccount} />
           </Box>
           <Box mb="4" width="100%">
-            <GetTransferInfo />
+            <GetTransferInfo currentAccount={currentAccount} />
           </Box>
         </Flex>
       </Container>
