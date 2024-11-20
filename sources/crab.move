@@ -26,6 +26,7 @@ module crab::demo {
     const ERROR_INVALID_AMOUNT: u64 = 108;
 
     const ONE_MONTH_IN_MS: u64 = 30 * 24 * 60 * 60 * 1000;
+    const GAS: u64 = 1000000;
     const POINTS: u64 = 10;
     const MARK_SCAM_POINTS: u64 = 5;
 
@@ -195,8 +196,7 @@ module crab::demo {
     }
 
     //mint admincap
-    public fun mintAdminCap(admin_cap:&AdminCap,to:address,ctx:&mut TxContext){
-        assert!(sender(ctx) == object::owner(admin_cap.id), ERROR_INVALID_SENDER);
+    public fun mintAdminCap(_:&AdminCap,to:address,ctx:&mut TxContext){
         let admin_cap=AdminCap{
             id:object::new(ctx)
         };
@@ -204,8 +204,7 @@ module crab::demo {
     }
 
     //withdraw gaspool
-    public fun withdraw_commision(admin_cap:&AdminCap, crabBank: &mut GasPool,amount:u64,to:address,ctx: &mut TxContext){
-        assert!(sender(ctx) == object::owner(admin_cap.id), ERROR_INVALID_SENDER);
+    public fun withdraw_commision(_:&AdminCap, crabBank: &mut GasPool,amount:u64,to:address,ctx: &mut TxContext){
         assert!(crabBank.suiBalance.value() > amount, ERROR_INVALID_AMOUNT);
         let coin_balance= crabBank.suiBalance.split(amount);
         let coin=from_balance(coin_balance,ctx);
@@ -214,8 +213,9 @@ module crab::demo {
 
     //commision gas
     fun commision(crabBank:&mut GasPool,dcoins:coin::Coin<0x2::sui::SUI>,ctx:&mut TxContext){
+        assert!(dcoins.value() > GAS, ERROR_INVALID_AMOUNT);
         let mut into_balance = into_balance(dcoins);
-        let despoitCoin = into_balance.split(1000000);
+        let despoitCoin = into_balance.split(GAS);
         crabBank.suiBalance.join(despoitCoin);
         let coin_withdraw = from_balance(into_balance,ctx);
         public_transfer(coin_withdraw,ctx.sender());
@@ -330,7 +330,7 @@ module crab::demo {
         scampool:&mut ScamCoinPool,
     ){
         let mut i = 0;
-        while (i < vector::length(&pooltable.ScamCoin_map)) {
+        while (i < vector::length(&scampool.ScamCoin_map)) {
             let scaminfo = &scampool.ScamCoin_map[i];
             assert!(scaminfo.cointype != typename, ERROR_ALREADY_EXISTS);
             i = i + 1;
@@ -346,7 +346,7 @@ module crab::demo {
         let mut i = 0;
 
         // 遍历 user_votes 中的每个 UserVote
-        while (i < vector::length(&scam_coin_pool.user_votes)) {
+        while (i < vector::length(&scampool.user_votes)) {
             let vote = &scampool.user_votes[i];
             assert!(vote.coin_type == typename && vote.user != sender(ctx)  , ERROR_ALREADY_VOTED);
             i = i + 1;
@@ -418,7 +418,7 @@ module crab::demo {
     ){
         commision(crabBank,suiCoin,ctx);
         let cointype = scamcoin.cointype;
-        check_scam(cointype,scampool);
+        check_mark_scam(cointype, scampool, ctx);
 
         scamcoin.checknum = scamcoin.checknum + 1;
         nft.users_points = nft.users_points + MARK_SCAM_POINTS;
