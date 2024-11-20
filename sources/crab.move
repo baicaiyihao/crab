@@ -1,4 +1,5 @@
-module demo::demo {
+module crab::demo {
+    use std::ascii::String;
     use std::string::utf8;
     use sui::balance::{Balance,zero};
     use std::type_name::get;
@@ -125,20 +126,20 @@ module demo::demo {
     // Represents a ScamCoin, including its type and check count.
     public struct ScamCoin has key{
         id: UID,
-        cointype: TypeName,
+        cointype: String,
         checknum: u64
     }
 
     // Stores metadata about a ScamCoin.
     public struct ScamCoininfo has copy,store {
-        cointype: TypeName,
+        cointype: String,
         ScamCoin_id: ID,
     }
 
     // Represents a user's vote for marking a ScamCoin.
     public struct UserVote has copy,store {
         user: address,
-        coin_type: TypeName,
+        coin_type: String,
     }
 
     // A pool storing all ScamCoins and user votes.
@@ -383,7 +384,7 @@ module demo::demo {
     // ==========================
     // Check if a ScamCoin for the specified coin type already exists in the ScamCoinPool.
     public fun check_scam(
-        typename: TypeName,
+        typename: String,
         scampool:&mut ScamCoinPool,
     ){
         let mut i = 0;
@@ -396,7 +397,7 @@ module demo::demo {
 
     // Check if a user has already marked a specific coin type as a scam.
     public fun check_mark_scam(
-        typename: TypeName,
+        typename: String,
         scampool:&mut ScamCoinPool,
         ctx:&mut TxContext
     ){
@@ -414,7 +415,7 @@ module demo::demo {
     public fun new_mark_scam(
         crabBank: &mut GasPool,
         suiCoin: coin::Coin<0x2::sui::SUI>,
-        scamcointype: TypeName,
+        scamcointype: String,
         scamCoinPool:&mut ScamCoinPool,
         nft:&mut DemoNFT,
         ctx:&mut TxContext
@@ -448,12 +449,13 @@ module demo::demo {
 
         scamcoin.checknum = scamcoin.checknum + 1;
         nft.users_points = nft.users_points + MARK_SCAM_POINTS;
+        add_user_mark_info(cointype,scampool,ctx)
     }
 
     // Record a new ScamCoin and the user's vote in the ScamCoinPool.
     public fun add_Scaminfo(
         scamcoin_id: ID,
-        typename: TypeName,
+        typename: String,
         scampool:&mut ScamCoinPool,
         ctx:&mut TxContext
     ){
@@ -461,11 +463,20 @@ module demo::demo {
             cointype:typename,
             ScamCoin_id:scamcoin_id
         };
+
+        vector::push_back(&mut scampool.ScamCoin_map, scaminfo);
+        add_user_mark_info(typename,scampool,ctx)
+    }
+
+    public fun add_user_mark_info(
+        typename: String,
+        scampool:&mut ScamCoinPool,
+        ctx:&mut TxContext
+    ){
         let vote = UserVote {
             user: sender(ctx),
             coin_type: typename,
         };
-        vector::push_back(&mut scampool.ScamCoin_map, scaminfo);
         vector::push_back(&mut scampool.user_votes, vote);
     }
 
@@ -477,9 +488,9 @@ module demo::demo {
     // while handling gas fees and updating user points and transfer records.
     public fun deposit<X>(
         coin_x: Coin<X>,
+        pool: &mut CoinPool<X>,
         crabBank:&mut GasPool,
         suiCoin: coin::Coin<0x2::sui::SUI>,
-        pool: &mut CoinPool<X>,
         transferrecordpool:&mut TransferRecordPool,
         nft:&mut DemoNFT,
         time:& Clock,
