@@ -72,36 +72,38 @@ export default function GetUserPoints() {
     }, [account]);
 
     return (
-        <div style={{ marginTop: "20px" }}>
+        <div style={{textAlign: "center",  marginTop: "20px" }}>
             <h3>User Points Leaderboard</h3>
             {userPoints.length > 0 ? (
-                <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-                    <thead>
-                    <tr>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Rank</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>User Address</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Points</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {userPoints.map((user, index) => (
-                        <tr key={index}>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                {index + 1}
-                            </td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                {shortenAddress(user.userAddress)}
-                            </td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                {user.points}
-                            </td>
+                <div style={{textAlign: "center", marginTop: "20px"}}>
+                    <table style={{width: "70%", borderCollapse: "collapse", margin: "auto"}}>
+                        <thead>
+                        <tr>
+                            <th style={{border: "1px solid #ddd", padding: "8px"}}>Rank</th>
+                            <th style={{border: "1px solid #ddd", padding: "8px"}}>User Address</th>
+                            <th style={{border: "1px solid #ddd", padding: "8px"}}>Points</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
-            ) : (
-                <p>No user points data found.</p>
-            )}
-        </div>
-    );
-}
+                        </thead>
+                        <tbody>
+                        {userPoints.map((user, index) => (
+                            <tr key={index}>
+                                <td style={{border: "1px solid #ddd", padding: "8px"}}>
+                                    {index + 1}
+                                </td>
+                                <td style={{border: "1px solid #ddd", padding: "8px"}}>
+                                    {shortenAddress(user.userAddress)}
+                                </td>
+                                <td style={{border: "1px solid #ddd", padding: "8px"}}>
+                                    {user.points}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+                    ) : (
+                    <p>No user points data found.</p>
+                    )}
+                </div>
+            );
+            }

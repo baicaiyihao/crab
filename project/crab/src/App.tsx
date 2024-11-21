@@ -4,6 +4,7 @@ import Dashboard from "./ui/Dashboard.tsx";
 import crabLogo from "./assets/img.png";
 import PoolDetails from "./pages/GetPoolInfo.tsx";
 import GetUserPoints from "./pages/GetUserPoints.tsx"; // 确保路径正确
+import GetScamCoinInfo from "./pages/GetScamCoin.tsx";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -65,7 +66,7 @@ export default function App() {
         <main style={mainStyles}>
           {activeTab === "Dashboard" && <Dashboard/>}
           {activeTab === "Poolinfo" && <PoolDetails/>}
-          {activeTab === "Scamcoin" && <h2 style={sectionTitleStyles}>Scamcoin Section</h2>}
+          {activeTab === "Scamcoin" && <GetScamCoinInfo />}
           {activeTab === "Userpoint" && <GetUserPoints />}
           {activeTab === "About" && <h2 style={sectionTitleStyles}>About Section</h2>}
         </main>

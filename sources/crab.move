@@ -26,7 +26,6 @@ module crab::demo {
     const ONE_MONTH_IN_MS: u64 = 30 * 24 * 60 * 60 * 1000;
     const GAS: u64 = 1000000;
     const POINTS: u64 = 10;
-    const MARK_SCAM_POINTS: u64 = 5;
 
     // ==========================
     // General Structs
@@ -126,20 +125,20 @@ module crab::demo {
     // Represents a ScamCoin, including its type and check count.
     public struct ScamCoin has key{
         id: UID,
-        cointype: String,
+        cointype: TypeName,
         checknum: u64
     }
 
     // Stores metadata about a ScamCoin.
     public struct ScamCoininfo has copy,store {
-        cointype: String,
+        cointype: TypeName,
         ScamCoin_id: ID,
     }
 
     // Represents a user's vote for marking a ScamCoin.
     public struct UserVote has copy,store {
         user: address,
-        coin_type: String,
+        coin_type: TypeName,
     }
 
     // A pool storing all ScamCoins and user votes.
@@ -381,7 +380,7 @@ module crab::demo {
     // ==========================
     // Check if a ScamCoin for the specified coin type already exists in the ScamCoinPool.
     public fun check_scam(
-        typename: String,
+        typename: TypeName,
         scampool:&mut ScamCoinPool,
     ){
         let mut i = 0;
@@ -394,7 +393,7 @@ module crab::demo {
 
     // Check if a user has already marked a specific coin type as a scam.
     public fun check_mark_scam(
-        typename: String,
+        typename: TypeName,
         scampool:&mut ScamCoinPool,
         ctx:&mut TxContext
     ){
@@ -409,14 +408,15 @@ module crab::demo {
     }
 
     // Create a new ScamCoin and record its information in the ScamCoinPool.
-    public fun new_mark_scam(
+    public fun new_mark_scam<X>(
+        _:&mut CoinPool<X>,
         crabBank: &mut GasPool,
         suiCoin: coin::Coin<0x2::sui::SUI>,
-        scamcointype: String,
         scamCoinPool:&mut ScamCoinPool,
         nft:&mut DemoNFT,
         ctx:&mut TxContext
     ){
+        let scamcointype = get<X>();
         check_scam(scamcointype, scamCoinPool);
         commision(crabBank,suiCoin,ctx);
         let newscancoin = ScamCoin{
@@ -426,12 +426,13 @@ module crab::demo {
         };
         let scancoinid = object::id(&newscancoin);
         add_Scaminfo(scancoinid,scamcointype,scamCoinPool,ctx);
-        nft.users_points = nft.users_points + MARK_SCAM_POINTS;
+        nft.users_points = nft.users_points + POINTS;
         share_object(newscancoin);
     }
 
     // Increment the check count for an existing ScamCoin and record the user's vote.
-    public fun add_mark_scam(
+    public fun add_mark_scam<X>(
+        _:&mut CoinPool<X>,
         crabBank:&mut GasPool,
         suiCoin: coin::Coin<0x2::sui::SUI>,
         scamcoin: &mut ScamCoin,
@@ -445,14 +446,14 @@ module crab::demo {
         commision(crabBank,suiCoin,ctx);
 
         scamcoin.checknum = scamcoin.checknum + 1;
-        nft.users_points = nft.users_points + MARK_SCAM_POINTS;
+        nft.users_points = nft.users_points + POINTS;
         add_user_mark_info(cointype,scampool,ctx)
     }
 
     // Record a new ScamCoin and the user's vote in the ScamCoinPool.
     public fun add_Scaminfo(
         scamcoin_id: ID,
-        typename: String,
+        typename: TypeName,
         scampool:&mut ScamCoinPool,
         ctx:&mut TxContext
     ){
@@ -466,7 +467,7 @@ module crab::demo {
     }
 
     public fun add_user_mark_info(
-        typename: String,
+        typename: TypeName,
         scampool:&mut ScamCoinPool,
         ctx:&mut TxContext
     ){

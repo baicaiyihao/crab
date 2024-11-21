@@ -2,8 +2,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../config/networkConfig.ts";
 import { handleSplitGas } from "../utils/splitCoinHelper.ts";
-import { bcs } from "@mysten/bcs";
-import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL } from "../config/constants.ts";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_SCAMCOINPOOL} from "../config/constants.ts";
 
 interface MarkScamProps {
     poolId: string;
@@ -28,27 +27,21 @@ export default function MarkScam({ poolId, coinType, demoNftId, onSuccess }: Mar
             tx.setGasBudget(100000000);
             const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
 
-
-            console.log(tx.object(coinType));
-            console.log(coinType);
-            const serializedCoinType = bcs.string().serialize(coinType).toBytes();
-
-
-
             // 调用 new_mark_scam 函数
             tx.moveCall({
+                typeArguments: [coinType],
                 arguments: [
+                    tx.object(poolId),
                     tx.object(TESTNET_GASPOOL),
                     tx.object(newCoin),
-                    tx.object(coinType), // 直接传递 coinType，因为它是字符串类型
-                    tx.object(poolId),
+                    tx.object(TESTNET_SCAMCOINPOOL),
                     tx.object(demoNftId),
                 ],
                 target: `${crabPackageId}::demo::new_mark_scam`,
             });
             
             // 执行交易
-            let result = await signAndExecute({transaction: tx});
+            signAndExecute({transaction: tx});
 
             console.log(tx);
             if (onSuccess) {
@@ -63,7 +56,7 @@ export default function MarkScam({ poolId, coinType, demoNftId, onSuccess }: Mar
         <button
             onClick={markAsScam}
             style={{
-                backgroundColor: "#ff4d4d",
+                backgroundColor: "#ffa500",
                 color: "#fff",
                 padding: "10px 20px",
                 border: "none",
