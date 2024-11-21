@@ -1,6 +1,11 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { TESTNET_TRANSFERRECORDPOOL, TESTNET_POOLTABLE, TESTNET_TIME } from "../config/constants.ts";
+import {
+    TESTNET_TRANSFERRECORDPOOL,
+    TESTNET_POOLTABLE,
+    TESTNET_TIME,
+    TESTNET_CRAB_PACKAGE_ID
+} from "../config/constants.ts";
 import Withdraw from "../components/withdraw.tsx";
 import { fetchPoolIdForCoin } from "../utils/poolHelpers.ts";
 import { fetchTokenDecimals } from "../utils/tokenHelpers.ts";
@@ -20,7 +25,8 @@ export default function GetTransferDetails() {
     // 获取用户的 DemoNFT
     async function fetchDemoNFT(profile: CategorizedObjects) {
         const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
-            objectType.includes("DemoNFT")
+            objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
+
         );
         if (demoNftObject) {
             const demoNftInstances = demoNftObject[1];

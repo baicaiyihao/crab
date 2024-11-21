@@ -36,7 +36,7 @@ export default function GetCoinInfo() {
                 }
 
                 const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
-                  objectType.includes("DemoNFT")
+                    objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
                 );
                 if (demoNftObject) {
                     const demoNftInstances = demoNftObject[1];

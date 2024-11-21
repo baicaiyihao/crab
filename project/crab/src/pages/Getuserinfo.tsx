@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getUserProfile } from "../utils";
 import { CategorizedObjects } from "../utils/assetsHelpers.ts";
 import CreateNFT from "../components/CreateNFT.tsx";
+import {TESTNET_CRAB_PACKAGE_ID} from "../config/constants.ts";
 
 const REFRESH_INTERVAL = 3000; // 每 30 秒刷新一次
 
@@ -21,7 +22,7 @@ export default function Getuserinfo() {
 
                 // 检查是否存在 DemoNFT 对象
                 const demoNFT = Object.entries(profile.objects || {}).find(
-                  ([objectType]) => objectType.includes("DemoNFT")
+                  ([objectType]) => objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
                 );
 
                 if (demoNFT) {
