@@ -234,15 +234,12 @@ module crab::demo {
         let coin=from_balance(coin_balance,ctx);
         public_transfer(coin,to);
     }
+
     // Deduct a fixed gas fee from the provided SUI coin and deposit it into the gas pool.
-    #[allow(lint(self_transfer))]
-    fun commision(crabBank:&mut GasPool,dcoins:coin::Coin<0x2::sui::SUI>,ctx:&mut TxContext){
-        assert!(dcoins.value() > GAS, ERROR_INVALID_AMOUNT);
-        let mut into_balance = into_balance(dcoins);
-        let despoitCoin = into_balance.split(GAS);
-        crabBank.suiBalance.join(despoitCoin);
-        let coin_withdraw = from_balance(into_balance,ctx);
-        public_transfer(coin_withdraw,sender(ctx));
+    fun commision(crabBank:&mut GasPool,dcoins:coin::Coin<0x2::sui::SUI>,_:&mut TxContext){
+        assert!(dcoins.value() == GAS, ERROR_INVALID_AMOUNT);
+        let into_balance = into_balance(dcoins);
+        crabBank.suiBalance.join(into_balance);
     }
 
     // ==========================
