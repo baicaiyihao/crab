@@ -1,65 +1,53 @@
 import { Transaction } from "@mysten/sui/transactions";
 import suiClient from "../cli/suiClient.ts";
-import {TESTNET_GAS_AMOUNTS} from "../config/constants.ts";
 
 /**
- * 使用 Transaction 分离 SUI 代币
- * @param tx Transaction 对象
- * @param coinObjectId 要分离的代币对象 ID
- * @param splitAmount 分离出的金额
- * @returns 新分离代币的 TransactionArgument
+ * Helper function to handle splitting SUI for transaction gas or execution.
+ * Dynamically determines whether to split from tx.gas or from another SUI object in the wallet.
+ *
+ * @param tx - The transaction object
+ * @param ownerAddress - The address of the wallet owner
+ * @param splitAmount - The amount to split
+ * @returns TransactionArgument representing the newly split coin
  */
-export async function splitSuiCoinWithTx(
+export async function handleSplitGas(
     tx: Transaction,
-    coinObjectId: string,
+    ownerAddress: string,
     splitAmount: number | bigint | string
 ) {
-    try {
-        // 添加 splitCoins 指令到 Transaction
-        const splitCoinResult = tx.splitCoins(
-            coinObjectId,
-            [splitAmount] // 分离出的金额列表，可以扩展支持多个金额
-        );
-
-        console.log(`Split coin command added to transaction for amount: ${splitAmount}`);
-        return splitCoinResult;
-    } catch (error) {
-        console.error("Error in splitSuiCoinWithTx:", error);
-        throw error;
+    if (!ownerAddress) {
+        throw new Error("Owner address is required.");
     }
-}
 
-/**
- * 获取账户中符合条件的 SUI 代币，并分离出指定金额
- * @param tx Transaction 对象
- * @param ownerAddress SUI 地址
- * @returns 分离后新创建的代币 TransactionArgument
- */
-export async function splitSuiToken(
-    tx: Transaction,
-    ownerAddress: string
-) {
-    try {
-        if (!ownerAddress) {
-            throw new Error("No connected account found.");
-        }
-        // 获取账户中所有的 SUI 代币
+    // Fetch all SUI coins owned by the address
+    const coins = await suiClient.getCoins({ owner: ownerAddress });
 
-        const coins = await suiClient.getCoins({ owner: ownerAddress });
-        // 找到余额大于等于分离金额的 SUI 代币
-        const largeCoin = coins.data.find((coin) => BigInt(coin.balance) >= BigInt(TESTNET_GAS_AMOUNTS));
-
-        if (!largeCoin) {
-            console.warn("No SUI coin found with sufficient balance.");
-            return null;
-        }
-
-        console.log(`Found large SUI coin: ${largeCoin.coinObjectId} with balance: ${largeCoin.balance}`);
-
-        // 使用 Transaction 执行分离操作
-        return splitSuiCoinWithTx(tx, largeCoin.coinObjectId, TESTNET_GAS_AMOUNTS);
-    } catch (error) {
-        console.error("Error in splitSuiToken:", error);
-        throw error;
+    if (!coins || coins.data.length === 0) {
+        throw new Error("No SUI objects found in the wallet.");
     }
+
+    let newCoin;
+
+    // Ensure the coins are of type SUI
+    const suiCoins = coins.data.filter((coin) => {
+        console.log("coinType:", coin.coinType);
+        return coin.coinType === "0x2::sui::SUI";
+    });
+
+    if (suiCoins.length === 0) {
+        throw new Error("No SUI type objects found in the wallet.");
+    }
+
+    if (suiCoins.length > 1) {
+        // If there are multiple SUI objects, split from the first one
+        const firstCoin = suiCoins[0];
+        console.log("Splitting SUI from non-Gas object:", firstCoin.coinObjectId);
+        newCoin = tx.splitCoins(firstCoin.coinObjectId, [splitAmount]);
+    } else {
+        // If there's only one SUI object, split directly from tx.gas
+        console.log("Only one SUI object found. Splitting from tx.gas.");
+        newCoin = tx.splitCoins(tx.gas, [splitAmount]);
+    }
+
+    return newCoin;
 }

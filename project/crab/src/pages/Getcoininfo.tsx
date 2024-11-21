@@ -113,6 +113,7 @@ export default function GetCoinInfo() {
                                     demoNftId={demoNftId}
                                     transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
                                     extraParam={TESTNET_TIME}
+                                    onSuccess={refreshUserProfile} // 传递刷新函数
                                   />
                                 ) : (
                                   <New_pool
@@ -123,6 +124,7 @@ export default function GetCoinInfo() {
                                     transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
                                     demoNftId={demoNftId}
                                     extraParam={TESTNET_TIME}
+                                    onSuccess={refreshUserProfile} // 传递刷新函数
                                   />
                                 )
                               ) : (

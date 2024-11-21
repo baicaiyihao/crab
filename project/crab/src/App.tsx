@@ -1,47 +1,116 @@
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { Box, Flex, Heading, Container } from "@radix-ui/themes";
-
-
-import Getuserinfo from "./pages/Getuserinfo.tsx";
-import Getcoininfo from "./pages/Getcoininfo.tsx";
-import GetTransferInfo from "./pages/GetTransferInfo.tsx";
+import { useState } from "react";
+import Dashboard from "./ui/Dashboard.tsx";
+import crabLogo from "./assets/img.png"; // 确保路径正确
 
 export default function App() {
-    const currentAccount = useCurrentAccount();
-    return (
-    <>
-      <Flex
-        position="sticky"
-        px="4"
-        py="2"
-        justify="between"
-        style={{
-          borderBottom: "1px solid var(--gray-a2)",
-        }}
-      >
-        <Box>
-          <Heading>Crab</Heading>
-        </Box>
+  const [activeTab, setActiveTab] = useState("Dashboard");
+  useCurrentAccount();
 
-        <Box>
-          <ConnectButton />
-        </Box>
-      </Flex>
+  // @ts-ignore
+  return (
+      <>
+        {/* 顶部导航栏 */}
+        <header style={headerStyles}>
+          <div style={logoContainerStyles}>
+            <img
+                src={crabLogo}
+                alt="Crab Logo"
+                style={{
+                  height: "60px",
+                  objectFit: "contain",
+                }}
+            />
+          </div>
+          <nav style={navStyles}>
+            <button
+                style={activeTab === "Poolinfo" ? activeTabStyles : tabStyles}
+                onClick={() => setActiveTab("Poolinfo")}
+            >
+              Poolinfo
+            </button>
+            <button
+                style={activeTab === "Scamcoin" ? activeTabStyles : tabStyles}
+                onClick={() => setActiveTab("Scamcoin")}
+            >
+              Scamcoin
+            </button>
+            <button
+                style={activeTab === "Userpoint" ? activeTabStyles : tabStyles}
+                onClick={() => setActiveTab("Userpoint")}
+            >
+              Userpoint
+            </button>
+            <button
+                style={activeTab === "Dashboard" ? activeTabStyles : tabStyles}
+                onClick={() => setActiveTab("Dashboard")}
+            >
+              Dashboard
+            </button>
+            <button
+                style={activeTab === "About" ? activeTabStyles : tabStyles}
+                onClick={() => setActiveTab("About")}
+            >
+              About
+            </button>
+          </nav>
+          <div>
+            <ConnectButton/>
+          </div>
+        </header>
 
-      <Container>
-        <Flex direction="column" align="center" my="4">
-          <Box mb="4" width="100%">
-            {/* 传递 currentAccount 作为参数 */}
-            <Getuserinfo currentAccount={currentAccount} />
-          </Box>
-          <Box mb="4" width="100%">
-            <Getcoininfo currentAccount={currentAccount} />
-          </Box>
-          <Box mb="4" width="100%">
-            <GetTransferInfo currentAccount={currentAccount} />
-          </Box>
-        </Flex>
-      </Container>
-    </>
+        {/* 主内容区 */}
+        <main style={mainStyles}>
+          {activeTab === "Dashboard" && <Dashboard/>}
+          {activeTab === "Poolinfo" && <h2 style={sectionTitleStyles}>Poolinfo Section</h2>}
+          {activeTab === "Scamcoin" && <h2 style={sectionTitleStyles}>Scamcoin Section</h2>}
+          {activeTab === "Userpoint" && <h2 style={sectionTitleStyles}>Userpoint Section</h2>}
+          {activeTab === "About" && <h2 style={sectionTitleStyles}>About Section</h2>}
+        </main>
+      </>
   );
 }
+
+const headerStyles: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: "10px 20px",
+  backgroundColor: "#ffffff",
+  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+  color: "#333333",
+};
+
+const logoContainerStyles: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+};
+
+const navStyles: React.CSSProperties = {
+  display: "flex",
+  gap: "20px",
+};
+
+const tabStyles: React.CSSProperties = {
+  background: "none",
+  border: "none",
+  color: "#555555",
+  fontSize: "16px",
+  cursor: "pointer",
+  padding: "5px 10px",
+};
+
+const activeTabStyles: React.CSSProperties = {
+  ...tabStyles,
+  borderBottom: "2px solid #007bff",
+  color: "#007bff",
+};
+
+const mainStyles: React.CSSProperties = {
+  padding: "20px",
+};
+
+const sectionTitleStyles: React.CSSProperties = {
+  marginBottom: "20px",
+  fontSize: "24px",
+};

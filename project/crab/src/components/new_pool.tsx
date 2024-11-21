@@ -1,7 +1,9 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {Button, Container} from "@radix-ui/themes";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { mergeCoins } from "../utils/mergeCoinsHelper.ts"; // 引入合并功能
+import {useCurrentAccount, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
+import { mergeCoins } from "../utils/mergeCoinsHelper.ts";
+import {handleSplitGas} from "../utils/splitCoinHelper.ts";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants.ts"; // 引入合并功能
 
 
 interface NewPoolProps {
@@ -12,6 +14,7 @@ interface NewPoolProps {
     transferRecordPoolId: string;
     demoNftId: string;
     extraParam: string;
+    onSuccess: () => void; // 成功回调函数
 }
 
 export default function New_pool({
@@ -22,17 +25,26 @@ export default function New_pool({
                              transferRecordPoolId,
                              demoNftId,
                              extraParam,
+                             onSuccess
                          }: NewPoolProps) {
     const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    const currentAccount = useCurrentAccount();
 
     async function executeNewPool() {
         if (!crabPackageId || coinObjects.length === 0) {
             console.error("Invalid input parameters for New_pool.");
             return;
         }
+        if (!currentAccount?.address) {
+            console.error("No connected account found.");
+            return;
+        }
+
 
         try {
             const tx = new Transaction();
+            tx.setGasBudget(100000000);
+            const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
 
             // 合并代币对象（如果有多个）
             mergeCoins(tx, coinObjects);
@@ -43,6 +55,8 @@ export default function New_pool({
                 arguments: [
                     tx.object(coinObjects[0]), // 主代币对象
                     tx.object(poolTableId), // PoolTable ID
+                    tx.object(TESTNET_GASPOOL),
+                    tx.object(newCoin),
                     tx.object(transferRecordPoolId), // TransferRecordPool ID
                     tx.object(demoNftId), // DemoNFT ID
                     tx.object(extraParam), // 额外参数
@@ -50,10 +64,11 @@ export default function New_pool({
                 target: `${crabPackageId}::demo::new_pool`,
             });
 
-            tx.setGasBudget(100000000); // 设置 Gas 预算
-
             const result = await signAndExecute({ transaction: tx });
             console.log("New pool transaction successful:", result);
+            if (onSuccess) {
+                onSuccess(); // 调用回调刷新数据
+            }
         } catch (error) {
             console.error("Error executing new_pool transaction:", error);
         }

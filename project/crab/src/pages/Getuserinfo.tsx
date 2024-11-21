@@ -45,6 +45,7 @@ export default function Getuserinfo() {
 
         // 清理定时器
         return () => clearInterval(intervalId);
+
     }, [account]);
 
     return (

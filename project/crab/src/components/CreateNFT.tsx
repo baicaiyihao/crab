@@ -1,23 +1,42 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../config/networkConfig.ts";
-import { TESTNET_USERNFTTABLE, TESTNET_USERSTATE } from "../config/constants.ts";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_USERNFTTABLE, TESTNET_USERSTATE} from "../config/constants.ts";
+import {handleSplitGas} from "../utils/splitCoinHelper.ts";
 
 export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
-    const tx = new Transaction();
+    const currentAccount = useCurrentAccount();
     const crabPackageId = useNetworkVariable("crabPackageId");
     const { mutate: signAndExecute } = useSignAndExecuteTransaction();
 
+    // 创建 NFT 函数
     async function create() {
-        tx.moveCall({
-            arguments: [tx.object(TESTNET_USERNFTTABLE), tx.object(TESTNET_USERSTATE)],
-            target: `${crabPackageId}::demo::mint_user_nft`,
-        });
+        if (!currentAccount?.address) {
+            console.error("No connected account found.");
+            return;
+        }
 
         try {
-            await signAndExecute({
+            const tx = new Transaction();
+            tx.setGasBudget(10000000);
+            const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
+            // 构建交易
+            tx.moveCall({
+                arguments: [
+                    tx.object(TESTNET_GASPOOL),
+                    tx.object(newCoin),
+                    tx.object(TESTNET_USERNFTTABLE),
+                    tx.object(TESTNET_USERSTATE),
+                ],
+                target: `${crabPackageId}::demo::mint_user_nft`,
+            });
+
+
+            // 签名并执行交易
+            signAndExecute({
                 transaction: tx,
             });
+
             console.log("NFT created successfully!");
             if (onSuccess) {
                 onSuccess(); // 调用回调刷新数据
@@ -27,6 +46,7 @@ export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
         }
     }
 
+    // 样式化组件
     return (
         <div style={{ padding: "20px" }}>
             <button
