@@ -45,7 +45,7 @@ const dashboardStyles: React.CSSProperties = {
     padding: "20px",
     backgroundColor: "#f9f9f9",
     alignItems: "start", // 保证内容顶部对齐
-    minHeight: "calc(100vh - 60px)", // 减去导航栏高度
+    minHeight: "calc", // 减去导航栏高度
 };
 
 const tabsContainerStyles: React.CSSProperties = {
@@ -53,12 +53,11 @@ const tabsContainerStyles: React.CSSProperties = {
     display: "flex",
     gap: "10px",
     justifyContent: "flex-start", // 按钮靠左对齐
-    marginBottom: "10px", // 减少按钮与内容之间的间距
+    marginBottom: "10px",
 };
 
 const tabButtonStyles: React.CSSProperties = {
-    padding: "8px 16px", // 调整内边距使按钮更紧凑
-    height: "38px", // 调整按钮高度
+    padding: "8px 16px",
     border: "1px solid #ddd",
     backgroundColor: "#ffffff",
     cursor: "pointer",
@@ -81,7 +80,7 @@ const mainAreaStyles: React.CSSProperties = {
     padding: "20px",
     borderRadius: "8px",
     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-    marginTop: "-300px", // 缩小与按钮之间的距离
+    marginTop: "0", // 保证与按钮的顶部距离为 0
 };
 
 const userInfoStyles: React.CSSProperties = {
@@ -89,5 +88,5 @@ const userInfoStyles: React.CSSProperties = {
     padding: "20px",
     borderRadius: "8px",
     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-    marginTop: "-300px", // 缩小与主内容的顶部间距
+    marginTop: "0", // 保证与主内容顶部对齐
 };

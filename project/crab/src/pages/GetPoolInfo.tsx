@@ -1,9 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { TESTNET_POOLTABLE, TESTNET_CRAB_PACKAGE_ID } from "../config/constants.ts";
+import { TESTNET_POOLTABLE, TESTNET_CRAB_PACKAGE_ID, TESTNET_SCAMCOINPOOL } from "../config/constants.ts";
 import { fetchTokenDecimals } from "../utils/tokenHelpers.ts";
 import suiClient from "../cli/suiClient.ts";
 import MarkScam from "../components/new_mark_scam.tsx";
+import AddMarkScam from "../components/add_mark_scam.tsx"; // 引入 AddMarkScam
 import { getUserProfile } from "../utils";
 
 export default function GetPoolInfo() {
@@ -11,6 +12,7 @@ export default function GetPoolInfo() {
     const [poolInfoList, setPoolInfoList] = useState<any[]>([]);
     const [tokenDecimals, setTokenDecimals] = useState<{ [coinType: string]: number }>({});
     const [demoNftId, setDemoNftId] = useState<string | null>(null);
+    const [scamCoinMap, setScamCoinMap] = useState<{ [coinType: string]: string }>({}); // 存储 coinType 到 scamCoinId 的映射
 
     const formatTokenBalance = (balance: bigint, decimals: number): string => {
         const integer = balance / BigInt(10 ** decimals);
@@ -46,7 +48,31 @@ export default function GetPoolInfo() {
         }
     }
 
-    // 加载池信息
+    async function fetchScamCoinPool() {
+        try {
+            const scamCoinPool = await suiClient.getObject({
+                id: TESTNET_SCAMCOINPOOL,
+                options: { showContent: true },
+            });
+
+            const content = scamCoinPool?.data?.content;
+            if (content?.dataType === "moveObject" && (content as any)?.fields?.ScamCoin_map) {
+                const scamCoinMap = (content as any).fields.ScamCoin_map.reduce(
+                    (acc: { [coinType: string]: string }, scamCoin: { fields: { cointype: { fields: { name: string } }; ScamCoin_id: string } }) => {
+                        const coinType = scamCoin?.fields?.cointype?.fields?.name || "Unknown";
+                        const scamCoinId = scamCoin?.fields?.ScamCoin_id || "Unknown";
+                        acc[coinType] = scamCoinId;
+                        return acc;
+                    },
+                    {}
+                );
+                setScamCoinMap(scamCoinMap);
+            }
+        } catch (error) {
+            console.error("Error fetching ScamCoinPool:", error);
+        }
+    }
+
     async function fetchPoolInfo() {
         try {
             const poolTable = await suiClient.getObject({
@@ -65,7 +91,7 @@ export default function GetPoolInfo() {
                     const pools = await Promise.all(
                         poolMap.map(async (pool) => {
                             const rawName = pool?.fields?.cointype?.fields?.name || "Unknown";
-                            const coinType = `0x${rawName}`;
+                            const coinType = rawName;
                             const poolId = pool?.fields?.object || "Unknown";
 
                             const poolData = await suiClient.getObject({
@@ -98,8 +124,8 @@ export default function GetPoolInfo() {
                                 poolId: truncateAddress(poolId),
                                 balance,
                                 formattedBalance: formatTokenBalance(balance, decimals),
-                                rawPoolId: poolId, // 保存完整的 poolId
-                                rawCoinType: coinType, // 保存完整的 coinType
+                                rawPoolId: poolId,
+                                rawCoinType: coinType,
                             };
                         })
                     );
@@ -115,48 +141,61 @@ export default function GetPoolInfo() {
 
     useEffect(() => {
         if (account?.address) {
-            refreshUserProfile(); // 加载用户信息，包括 demoNftId
-            fetchPoolInfo(); // 加载池信息
+            refreshUserProfile();
+            fetchScamCoinPool(); // 获取 ScamCoinPool 数据
+            fetchPoolInfo();
         }
     }, [account]);
 
     return (
-        <div style={{ marginTop: "20px" }}>
-            <h3>Pool Info</h3>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <h3>Pool Leaderboard</h3>
             {poolInfoList.length > 0 ? (
-                <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
-                    <thead>
-                    <tr>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Rank</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Pool Coin Name</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Pool ID</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Balance</th>
-                        <th style={{ border: "1px solid #ddd", padding: "8px" }}>Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {poolInfoList.map((pool, index) => (
-                        <tr key={index}>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>{index + 1}</td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.name}</td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.poolId}</td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.formattedBalance}</td>
-                            <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                                {demoNftId ? (
-                                    <MarkScam
-                                        poolId={pool.rawPoolId}
-                                        coinType={pool.name}
-                                        demoNftId={demoNftId}
-                                        onSuccess={fetchPoolInfo} // 成功后刷新池信息
-                                    />
-                                ) : (
-                                    <p style={{ color: "red" }}>No DemoNFT found</p>
-                                )}
-                            </td>
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <table style={{ width: "70%", borderCollapse: "collapse", margin: "auto" }}>
+                        <thead>
+                        <tr>
+                            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Rank</th>
+                            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Pool Coin Name</th>
+                            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Pool ID</th>
+                            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Balance</th>
+                            <th style={{ border: "1px solid #ddd", padding: "8px" }}>Action</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {poolInfoList.map((pool, index) => (
+                            <tr key={index}>
+                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{index + 1}</td>
+                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.name}</td>
+                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.poolId}</td>
+                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>{pool.formattedBalance}</td>
+                                <td style={{ border: "1px solid #ddd", padding: "8px" }}>
+                                    {demoNftId ? (
+                                        scamCoinMap[pool.rawCoinType] ? (
+                                            <AddMarkScam
+                                                poolId={pool.rawPoolId}
+                                                scamCoinId={scamCoinMap[pool.rawCoinType]}
+                                                coinType={pool.rawCoinType}
+                                                demoNftId={demoNftId}
+                                                onSuccess={fetchPoolInfo}
+                                            />
+                                        ) : (
+                                            <MarkScam
+                                                poolId={pool.rawPoolId}
+                                                coinType={pool.rawCoinType}
+                                                demoNftId={demoNftId}
+                                                onSuccess={fetchPoolInfo}
+                                            />
+                                        )
+                                    ) : (
+                                        <p style={{ color: "red" }}>No DemoNFT found</p>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             ) : (
                 <p>No pool info found.</p>
             )}
