@@ -1,5 +1,4 @@
 module crab::demo {
-    use std::ascii::String;
     use std::string::utf8;
     use sui::balance::{Balance,zero};
     use std::type_name::get;
@@ -394,15 +393,16 @@ module crab::demo {
     // Check if a user has already marked a specific coin type as a scam.
     public fun check_mark_scam(
         typename: TypeName,
-        scampool:&mut ScamCoinPool,
-        ctx:&mut TxContext
-    ){
+        scampool: &mut ScamCoinPool,
+        ctx: &mut TxContext
+    ) {
         let mut i = 0;
 
-        // 遍历 user_votes 中的每个 UserVote
         while (i < vector::length(&scampool.user_votes)) {
             let vote = &scampool.user_votes[i];
-            assert!(vote.coin_type == typename && vote.user != sender(ctx)  , ERROR_ALREADY_VOTED);
+            if (vote.coin_type == typename && vote.user == sender(ctx)) {
+                assert!(false, ERROR_ALREADY_VOTED);
+            };
             i = i + 1;
         };
     }
