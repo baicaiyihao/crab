@@ -93,49 +93,55 @@ const HomePage: React.FC = () => {
                                 </li>
                             ))}
                         </ul>
-                    ) : (
-                        <div className="relative">
-                            {/* Dropdown Toggle */}
-                            <button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300"
-                            >
-                                Menu
-                            </button>
-                            {/* Dropdown Menu */}
-                            {isDropdownOpen && (
-                                <ul className="absolute right-0 mt-2 bg-[#471F50] rounded-lg shadow-lg text-white w-[200px]">
-                                    {[
-                                        { label: "Pools", id: "pools" },
-                                        { label: "Risk", id: "risk" },
-                                        { label: "Rewards", id: "rewards" },
-                                        { label: "Dashboard", id: "dashboard" },
-                                        { label: "About", id: "about" },
-                                    ].map((menu, index) => (
-                                        <li
-                                            key={index}
-                                            className="px-4 py-2 hover:bg-purple-700 cursor-pointer"
-                                            onClick={() => {
-                                                setSelectedMenu(menu.id);
-                                                setIsDropdownOpen(false);
-                                            }}
-                                        >
-                                            <a href={`#${menu.id}`}>{menu.label}</a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    )}
+                    ) : null}
 
                     {/* 右侧按钮 */}
                     <div className="flex items-center space-x-4">
                         <button className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white py-2 px-6 rounded-full shadow-md transition duration-300">
                             Connect Wallet
                         </button>
+
+                        {/* 菜单折叠按钮 */}
+                        {isNarrowScreen && (
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="text-white focus:outline-none"
+                            >
+                                {/* 三条横线图标 */}
+                                <div className="flex flex-col space-y-1">
+                                    <span className="block w-8 h-1 bg-white"></span>
+                                    <span className="block w-8 h-1 bg-white"></span>
+                                    <span className="block w-8 h-1 bg-white"></span>
+                                </div>
+                            </button>
+                        )}
                     </div>
                 </nav>
             </header>
+
+            {/* 折叠菜单 */}
+            {isNarrowScreen && isDropdownOpen && (
+                <ul className="absolute top-[96px] right-0 bg-[#471F50] rounded-lg shadow-lg text-white w-[200px]">
+                    {[
+                        { label: "Pools", id: "pools" },
+                        { label: "Risk", id: "risk" },
+                        { label: "Rewards", id: "rewards" },
+                        { label: "Dashboard", id: "dashboard" },
+                        { label: "About", id: "about" },
+                    ].map((menu, index) => (
+                        <li
+                            key={index}
+                            className="px-4 py-2 hover:bg-purple-700 cursor-pointer"
+                            onClick={() => {
+                                setSelectedMenu(menu.id);
+                                setIsDropdownOpen(false); // 点击菜单项后关闭折叠菜单
+                            }}
+                        >
+                            <a href={`#${menu.id}`}>{menu.label}</a>
+                        </li>
+                    ))}
+                </ul>
+            )}
 
             {/* 主体内容 */}
             <main className="flex flex-1 flex-col lg:flex-row items-center justify-between px-8 mt-[96px]">
@@ -149,7 +155,7 @@ const HomePage: React.FC = () => {
                             WebkitTextFillColor: "transparent",
                         }}
                     >
-                        Clear Bad Assets, <br/>
+                        Clear Bad Assets, <br />
                         Unlock a Smarter Digital World
                     </h2>
                     <p className="text-lg text-gray-400">
@@ -198,12 +204,12 @@ const HomePage: React.FC = () => {
             <footer className="bg-purple-900 py-8 w-full">
                 <div className="container mx-auto px-8">
                     <div className="flex justify-center space-x-8">
-                        <img src="/path/to/asana.png" alt="Asana" className="h-8"/>
-                        <img src="/path/to/hubspot.png" alt="HubSpot" className="h-8"/>
-                        <img src="/path/to/stripe.png" alt="Stripe" className="h-8"/>
-                        <img src="/path/to/webflow.png" alt="Webflow" className="h-8"/>
-                        <img src="/path/to/mailchimp.png" alt="Mailchimp" className="h-8"/>
-                        <img src="/path/to/gumroad.png" alt="Gumroad" className="h-8"/>
+                        <img src="/path/to/asana.png" alt="Asana" className="h-8" />
+                        <img src="/path/to/hubspot.png" alt="HubSpot" className="h-8" />
+                        <img src="/path/to/stripe.png" alt="Stripe" className="h-8" />
+                        <img src="/path/to/webflow.png" alt="Webflow" className="h-8" />
+                        <img src="/path/to/mailchimp.png" alt="Mailchimp" className="h-8" />
+                        <img src="/path/to/gumroad.png" alt="Gumroad" className="h-8" />
                     </div>
                 </div>
             </footer>
