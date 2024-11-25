@@ -4,15 +4,14 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
+    "moduleResolution": "node", // 使用 Node.js 的模块解析方式
+    "types": ["node"], // 添加对 Node.js 类型的支持
+    "esModuleInterop": true, // 确保 ES 模块兼容性
+    "skipLibCheck": true, // 跳过库类型检查，减少问题
+    "resolveJsonModule": true, // 允许导入 JSON 文件
+    "isolatedModules": true, // 确保每个文件是模块
+    "noEmit": true, // 不生成编译结果
+    "jsx": "react-jsx", // 使用 React 的 JSX 语法支持
 
     /* Linting */
     "strict": true,
@@ -20,6 +19,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src"], // 包含 src 文件夹的所有代码
   "references": [{ "path": "./tsconfig.node.json" }]
 }
