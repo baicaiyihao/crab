@@ -1,4 +1,4 @@
-import suiClient from "../cli/suiClient.ts";
+import suiClient from "../cli/suiClient";
 
 /**
  * 根据 coinType 遍历并查找对应的 poolId

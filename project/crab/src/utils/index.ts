@@ -1,6 +1,6 @@
 import { isValidSuiAddress } from "@mysten/sui/utils"; // 导入验证 Sui 地址的函数
 import { getFullnodeUrl, SuiClient, SuiObjectResponse } from "@mysten/sui/client"; // 导入 Sui 对象响应类型
-import { categorizeSuiObjects, CategorizedObjects } from "./assetsHelpers.ts"; // 导入分类对象的函数和接口
+import { categorizeSuiObjects, CategorizedObjects } from "./assetsHelpers"; // 导入分类对象的函数和接口
 
 export const getUserProfile = async (address: string): Promise<CategorizedObjects> => { // 定义获取用户资料的异步函数
   if (!isValidSuiAddress(address)) { // 验证地址是否合法
