@@ -1,9 +1,9 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../config/networkConfig.ts";
-import { handleSplitGas } from "../utils/splitCoinHelper.ts";
-import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL } from "../config/constants.ts";
+import { useNetworkVariable } from "../config/networkConfig";
+import { handleSplitGas } from "../utils/splitCoinHelper";
+import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL } from "../config/constants";
 
 interface WithdrawProps {
     transferInRecordObject: string; // 转账记录对象 ID

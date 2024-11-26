@@ -1,8 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../config/networkConfig.ts";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_USERNFTTABLE, TESTNET_USERSTATE} from "../config/constants.ts";
-import {handleSplitGas} from "../utils/splitCoinHelper.ts";
+import { useNetworkVariable } from "../config/networkConfig";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_USERNFTTABLE, TESTNET_USERSTATE} from "../config/constants";
+import {handleSplitGas} from "../utils/splitCoinHelper";
 
 export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
     const currentAccount = useCurrentAccount();

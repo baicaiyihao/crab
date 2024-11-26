@@ -1,9 +1,9 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {Button, Container} from "@radix-ui/themes";
 import {useCurrentAccount, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
-import { mergeCoins } from "../utils/mergeCoinsHelper.ts";
-import {handleSplitGas} from "../utils/splitCoinHelper.ts";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants.ts"; // 引入合并功能
+import { mergeCoins } from "../utils/mergeCoinsHelper";
+import {handleSplitGas} from "../utils/splitCoinHelper";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants"; // 引入合并功能
 
 
 interface NewPoolProps {

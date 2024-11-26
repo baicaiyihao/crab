@@ -1,8 +1,8 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariable } from "../config/networkConfig.ts";
-import { handleSplitGas } from "../utils/splitCoinHelper.ts";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_SCAMCOINPOOL} from "../config/constants.ts";
+import { useNetworkVariable } from "../config/networkConfig";
+import { handleSplitGas } from "../utils/splitCoinHelper";
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_SCAMCOINPOOL} from "../config/constants";
 
 interface MarkScamProps {
     poolId: string;
