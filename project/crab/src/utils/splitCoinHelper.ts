@@ -1,5 +1,5 @@
 import { Transaction } from "@mysten/sui/transactions";
-import suiClient from "../cli/suiClient.ts";
+import suiClient from "../cli/suiClient";
 
 /**
  * Helper function to handle splitting SUI for transaction gas or execution.
