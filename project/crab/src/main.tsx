@@ -6,9 +6,9 @@ import "@radix-ui/themes/styles.css";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Theme } from "@radix-ui/themes";
-import App from "./App.tsx";
-import "./index.css";
-import { networkConfig } from "./config/networkConfig.ts";
+import App from "./App";
+import "./styles/index.css";
+import { networkConfig } from "./config/networkConfig";
 
 const queryClient = new QueryClient();
 

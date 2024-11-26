@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { TESTNET_USERNFTTABLE } from "../config/constants.ts";
-import suiClient from "../cli/suiClient.ts";
+import { TESTNET_USERNFTTABLE } from "../config/constants";
+import suiClient from "../cli/suiClient";
 
 export default function GetUserPoints() {
     const account = useCurrentAccount();

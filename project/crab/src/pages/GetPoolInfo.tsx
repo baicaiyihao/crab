@@ -1,10 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
-import { TESTNET_POOLTABLE, TESTNET_CRAB_PACKAGE_ID, TESTNET_SCAMCOINPOOL } from "../config/constants.ts";
-import { fetchTokenDecimals } from "../utils/tokenHelpers.ts";
-import suiClient from "../cli/suiClient.ts";
-import MarkScam from "../components/new_mark_scam.tsx";
-import AddMarkScam from "../components/add_mark_scam.tsx"; // 引入 AddMarkScam
+import { TESTNET_POOLTABLE, TESTNET_CRAB_PACKAGE_ID, TESTNET_SCAMCOINPOOL } from "../config/constants";
+import { fetchTokenDecimals } from "../utils/tokenHelpers";
+import suiClient from "../cli/suiClient";
+import MarkScam from "../components/new_mark_scam";
+import AddMarkScam from "../components/add_mark_scam"; // 引入 AddMarkScam
 import { getUserProfile } from "../utils";
 
 export default function GetPoolInfo() {

@@ -1,0 +1,34 @@
+.connect-wallet-container {
+    text-align: center;
+    padding: 20px;
+}
+
+.connect-wallet-title {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.connect-wallet-list {
+    list-style: none;
+    padding: 0;
+}
+
+.connect-wallet-item {
+    margin: 10px 0;
+}
+
+.connect-wallet-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #4f46e5;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.connect-wallet-button:hover {
+    background-color: #3b82f6;
+}
