@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import logo from "../assets/home/导航logo.webp";
-import background from "../assets/home/背景.webp";
-import navbackground from "../assets/home/导航栏背景.webp";
 import RightActionButtons from "../components/RightActionButtons";
+import "../styles/layout.css";
 
 const Layout: React.FC = () => {
     const [isNarrowScreen, setIsNarrowScreen] = useState<boolean>(false);
@@ -33,45 +31,24 @@ const Layout: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             {/* 背景 */}
-            <div
-                className="absolute inset-0 -z-10"
-                style={{
-                    backgroundImage: `url(${background})`,
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                }}
-            ></div>
+            <div className="layout-background"></div>
 
             {/* 导航栏 */}
-            <header
-                className="fixed top-0 w-full z-10 h-[96px] shadow-md"
-                style={{
-                    backgroundImage: `url(${navbackground})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    maxWidth: "2400px",
-                }}
-            >
+            <header className="navbar-background fixed top-0 w-full z-10 h-[96px] shadow-md">
+
                 <nav className="container mx-auto flex items-center justify-between h-full px-4">
                     {/* Logo */}
-                    <a
-                        href="/"
-                        className="logo-container w-[162px] h-[96px] bg-center bg-cover bg-no-repeat"
-                        style={{
-                            backgroundImage: `url(${logo})`,
-                        }}
-                    ></a>
+                    <a href="/" className="logo"></a>
 
                     {/* 导航菜单 */}
                     {!isNarrowScreen && (
-                        <ul className="menu-container flex gap-8 ml-[60px]" style={{ flexGrow: 2 }}>
+                        <ul className="menu-container flex gap-8 ml-[60px]" style={{flexGrow: 2}}>
                             {[
-                                { label: "Pools", path: "/#/pools" },
-                                { label: "Risk", path: "/#/risk" },
-                                { label: "Points", path: "/#/rewards" },
-                                { label: "Dashboard", path: "/#/dashboard" },
-                                { label: "About", path: "/#/about" },
+                                {label: "Pools", path: "/#/pools"},
+                                {label: "Risk", path: "/#/risk"},
+                                {label: "Points", path: "/#/rewards"},
+                                {label: "Dashboard", path: "/#/dashboard"},
+                                {label: "About", path: "/#/about"},
                             ].map((menu, index) => (
                                 <li key={index} className="relative cursor-pointer">
                                     <a
@@ -99,7 +76,7 @@ const Layout: React.FC = () => {
                                 </div>
                             </button>
                         )}
-                        <RightActionButtons />
+                        <RightActionButtons/>
                     </div>
                 </nav>
 
@@ -107,11 +84,11 @@ const Layout: React.FC = () => {
                 {isNarrowScreen && isDropdownOpen && (
                     <ul className="absolute top-[96px] right-0 bg-[#471F50] rounded-lg shadow-lg text-white w-[200px]">
                         {[
-                            { label: "Pools", path: "/#/pools" },
-                            { label: "Risk", path: "/#/risk" },
-                            { label: "Points", path: "/#/rewards" },
-                            { label: "Dashboard", path: "/#/dashboard" },
-                            { label: "About", path: "/#/about" },
+                            {label: "Pools", path: "/#/pools"},
+                            {label: "Risk", path: "/#/risk"},
+                            {label: "Points", path: "/#/rewards"},
+                            {label: "Dashboard", path: "/#/dashboard"},
+                            {label: "About", path: "/#/about"},
                         ].map((menu, index) => (
                             <li key={index} className="px-4 py-2 hover:bg-purple-700 cursor-pointer">
                                 <a href={menu.path}>{menu.label}</a>
