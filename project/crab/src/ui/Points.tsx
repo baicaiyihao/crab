@@ -3,7 +3,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { TESTNET_USERNFTTABLE } from "../config/constants";
 import suiClient from "../cli/suiClient";
 
-const Rewards: React.FC = () => {
+const Points: React.FC = () => {
     const account = useCurrentAccount();
     const [userPoints, setUserPoints] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -196,4 +196,4 @@ const Rewards: React.FC = () => {
     );
 };
 
-export default Rewards;
+export default Points;

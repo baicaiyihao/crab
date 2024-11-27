@@ -3,6 +3,7 @@ import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-ki
 import { useNetworkVariable } from "../config/networkConfig";
 import { handleSplitGas } from "../utils/splitCoinHelper";
 import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_SCAMCOINPOOL} from "../config/constants";
+import "../styles/MarkAsScamButton.css"
 
 interface MarkScamProps {
     poolId: string;
@@ -54,15 +55,9 @@ export default function MarkScam({ poolId, coinType, demoNftId, onSuccess }: Mar
 
     return (
         <button
+            type="button" // 添加此行
             onClick={markAsScam}
-            style={{
-                backgroundColor: "#ffa500",
-                color: "#fff",
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-            }}
+            className="mark-as-scam-button"
         >
             Mark as Scam
         </button>
