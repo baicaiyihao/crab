@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { getUserProfile } from "../utils";
 import { TESTNET_CRAB_PACKAGE_ID } from "../config/constants";
-import usericon from "../assets/home/用户ICON.png";
+import usericon from "../assets/home/用户ICON.webp";
 
 const UserInfoDropdown: React.FC = () => {
     const account = useCurrentAccount();

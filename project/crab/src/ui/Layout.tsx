@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import logo from "../assets/home/导航logo.png";
-import background from "../assets/home/背景.png";
-import navbackground from "../assets/home/导航栏背景.png";
+import logo from "../assets/home/导航logo.webp";
+import background from "../assets/home/背景.webp";
+import navbackground from "../assets/home/导航栏背景.webp";
 import RightActionButtons from "../components/RightActionButtons";
 
 const Layout: React.FC = () => {
@@ -67,11 +67,11 @@ const Layout: React.FC = () => {
                     {!isNarrowScreen && (
                         <ul className="menu-container flex gap-8 ml-[60px]" style={{ flexGrow: 2 }}>
                             {[
-                                { label: "Pools", path: "/pools" },
-                                { label: "Risk", path: "/risk" },
-                                { label: "Points", path: "/rewards" },
-                                { label: "Dashboard", path: "/dashboard" },
-                                { label: "About", path: "/about" },
+                                { label: "Pools", path: "/#/pools" },
+                                { label: "Risk", path: "/#/risk" },
+                                { label: "Points", path: "/#/rewards" },
+                                { label: "Dashboard", path: "/#/dashboard" },
+                                { label: "About", path: "/#/about" },
                             ].map((menu, index) => (
                                 <li key={index} className="relative cursor-pointer">
                                     <a
@@ -107,11 +107,11 @@ const Layout: React.FC = () => {
                 {isNarrowScreen && isDropdownOpen && (
                     <ul className="absolute top-[96px] right-0 bg-[#471F50] rounded-lg shadow-lg text-white w-[200px]">
                         {[
-                            { label: "Pools", path: "/pools" },
-                            { label: "Risk", path: "/risk" },
-                            { label: "Points", path: "/rewards" },
-                            { label: "Dashboard", path: "/dashboard" },
-                            { label: "About", path: "/about" },
+                            { label: "Pools", path: "/#/pools" },
+                            { label: "Risk", path: "/#/risk" },
+                            { label: "Points", path: "/#/rewards" },
+                            { label: "Dashboard", path: "/#/dashboard" },
+                            { label: "About", path: "/#/about" },
                         ].map((menu, index) => (
                             <li key={index} className="px-4 py-2 hover:bg-purple-700 cursor-pointer">
                                 <a href={menu.path}>{menu.label}</a>
