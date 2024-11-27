@@ -5,7 +5,7 @@ import HomePage from "./ui/Home";
 import Dashboard from "./ui/Dashboard";
 import Pools from "./ui/Pools";
 import Risk from "./ui/Risk";
-import Rewards from "./ui/Rewards";
+import Points from "./ui/Points";
 import About from "./ui/About";
 import NotFound from "./ui/NotFound";
 
@@ -18,7 +18,7 @@ const App: React.FC = () => {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="pools" element={<Pools />} />
                     <Route path="risk" element={<Risk />} />
-                    <Route path="rewards" element={<Rewards />} />
+                    <Route path="rewards" element={<Points />} />
                     <Route path="about" element={<About />} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
