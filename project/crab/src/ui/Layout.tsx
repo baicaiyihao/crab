@@ -104,7 +104,7 @@ const Layout: React.FC = () => {
             </main>
 
             {/* Footer */}
-            <footer className="bg-purple-900 py-8 w-full">
+            <footer className="footer-background bg-purple-900 py-8 w-full">
                 <div className="container mx-auto px-8">
                     <div className="flex justify-center space-x-8">
                         <p className="text-white text-sm">© 2024 Crab Dapp. All rights reserved.</p>
