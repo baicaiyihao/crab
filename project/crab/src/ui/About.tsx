@@ -2,7 +2,7 @@ import React from "react";
 
 const About: React.FC = () => {
     return (
-        <div className="mt-[96px] flex flex-col items-center justify-center min-h-screen bg-[#1F1B2D] text-white">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#1F1B2D] text-white">
             <h1 className="text-4xl font-bold mb-6">About Crab</h1>
             <p className="text-lg leading-8 text-center max-w-3xl">
                 Crab is an innovative platform designed to identify, collect, and recycle scam or phishing tokens in the blockchain ecosystem.
