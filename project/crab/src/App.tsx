@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./ui/Layout"; // 引入 Layout 组件
 import HomePage from "./ui/Home";
 import Dashboard from "./ui/Dashboard";
@@ -11,7 +11,7 @@ import NotFound from "./ui/NotFound";
 
 const App: React.FC = () => {
     return (
-        <BrowserRouter>
+        <Router>
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<HomePage />} />
@@ -23,7 +23,7 @@ const App: React.FC = () => {
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>
-        </BrowserRouter>
+        </Router>
     );
 };
 
