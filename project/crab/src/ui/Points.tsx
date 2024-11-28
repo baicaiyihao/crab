@@ -134,13 +134,11 @@ const Points: React.FC = () => {
                     {paginatedData.map((user, index) => (
                         <tr
                             key={index}
-                            className={`text-white ${
-                                index % 2 === 0 ? "bg-[#26223B]" : "bg-[#29263A]"
-                            }`}
+                            className="border-t border-t-[#1E1C28] hover:bg-[#444151]"
                         >
-                            <td className="px-6 py-4">{startIndex + index + 1}</td>
-                            <td className="px-6 py-4">{shortenAddress(user.userAddress)}</td>
-                            <td className="px-6 py-4">{user.points}</td>
+                            <td className="px-6 py-4 text-gray-400">{startIndex + index + 1}</td>
+                            <td className="px-6 py-4 text-gray-400">{shortenAddress(user.userAddress)}</td>
+                            <td className="px-6 py-4 text-gray-400">{user.points}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -162,6 +160,12 @@ const Points: React.FC = () => {
                             </option>
                         ))}
                     </select>
+
+
+                </div>
+                {/* 展示总数 */}
+                <div className="flex items-center">
+                    <span className="text-white mr-4">Total: {filteredData.length}</span>
                 </div>
 
                 <div className="flex items-center">
@@ -190,6 +194,7 @@ const Points: React.FC = () => {
                     >
                         &gt;
                     </button>
+
                 </div>
             </div>
         </div>

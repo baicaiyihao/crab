@@ -1,11 +1,11 @@
 import { Transaction } from "@mysten/sui/transactions";
 import { Button, Container } from "@radix-ui/themes";
-import {useCurrentAccount, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { useNetworkVariable } from "../config/networkConfig";
 import { mergeCoins } from "../utils/mergeCoinsHelper";
-import {handleSplitGas} from "../utils/splitCoinHelper";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants";
-
+import { handleSplitGas } from "../utils/splitCoinHelper";
+import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL } from "../config/constants";
+import { useState } from "react";
 
 interface DepositProps {
     coinType: string;
@@ -18,33 +18,41 @@ interface DepositProps {
 }
 
 export default function Deposit({
-                            coinType,
-                            poolId,
-                            coinObjects,
-                            demoNftId,
-                            transferRecordPoolId,
-                            extraParam,
-                            onSuccess
-                        }: DepositProps) {
-    const {mutate: signAndExecute} = useSignAndExecuteTransaction();
+                                    coinType,
+                                    poolId,
+                                    coinObjects,
+                                    demoNftId,
+                                    transferRecordPoolId,
+                                    extraParam,
+                                    onSuccess
+                                }: DepositProps) {
+    const { mutateAsync: signAndExecute, isError, error } = useSignAndExecuteTransaction();
     const crabPackageId = useNetworkVariable("crabPackageId");
     const currentAccount = useCurrentAccount();
 
-    async function Deposit_coin() {
+    const [loading, setLoading] = useState(false);
+
+    async function depositCoin() {
         if (!currentAccount?.address) {
             console.error("No connected account found.");
             return;
         }
+
         try {
+            setLoading(true); // 设置加载状态
+
             const tx = new Transaction();
-
             tx.setGasBudget(100000000);
-            const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
 
-            mergeCoins(tx, coinObjects);
+            // 处理 gas 分割
+            const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
+            if (!newCoin) {
+                console.error("Failed to split gas.");
+                return;
+            }
+
             // 合并代币对象
-            console.log(coinObjects[0])
-            console.log(poolId)
+            mergeCoins(tx, coinObjects);
 
             // 调用 deposit 函数
             tx.moveCall({
@@ -61,14 +69,18 @@ export default function Deposit({
                 target: `${crabPackageId}::demo::deposit`,
             });
 
+            // 执行交易并等待结果
+            const result = await signAndExecute({ transaction: tx });
+            console.log("Deposit transaction executed:", result);
 
-            // 执行交易
-            signAndExecute({transaction: tx});
-            if (onSuccess) {
-                onSuccess(); // 调用回调刷新数据
+            // 如果交易成功，调用回调函数
+            if (result && !isError) {
+                onSuccess(); // 调用成功的回调函数
             }
         } catch (error) {
             console.error("Error executing deposit transaction:", error);
+        } finally {
+            setLoading(false); // 重置加载状态
         }
     }
 
@@ -76,7 +88,7 @@ export default function Deposit({
         <Container>
             <Button
                 size="3"
-                onClick={Deposit_coin}
+                onClick={depositCoin}
                 style={{
                     backgroundColor: "#007bff",
                     color: "#fff",
@@ -84,9 +96,13 @@ export default function Deposit({
                     borderRadius: "5px",
                     cursor: "pointer",
                 }}
+                disabled={loading}
             >
-                Deposit
+                {loading ? 'Depositing...' : 'Deposit'}
             </Button>
+
+            {/* 显示状态反馈 */}
+            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </Container>
     );
 }

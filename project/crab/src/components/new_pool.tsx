@@ -3,7 +3,8 @@ import {Button, Container} from "@radix-ui/themes";
 import {useCurrentAccount, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
 import { mergeCoins } from "../utils/mergeCoinsHelper";
 import {handleSplitGas} from "../utils/splitCoinHelper";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants"; // 引入合并功能
+import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL} from "../config/constants";
+import {useState} from "react"; // 引入合并功能
 
 
 interface NewPoolProps {
@@ -27,8 +28,10 @@ export default function New_pool({
                              extraParam,
                              onSuccess
                          }: NewPoolProps) {
-    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecute, isError, error } = useSignAndExecuteTransaction();
     const currentAccount = useCurrentAccount();
+
+    const [loading, setLoading] = useState(false);
 
     async function executeNewPool() {
         if (!crabPackageId || coinObjects.length === 0) {
@@ -42,6 +45,7 @@ export default function New_pool({
 
 
         try {
+            setLoading(true); // 设置加载状态
             const tx = new Transaction();
             tx.setGasBudget(100000000);
             const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
@@ -64,10 +68,13 @@ export default function New_pool({
                 target: `${crabPackageId}::demo::new_pool`,
             });
 
+            // 执行交易并等待结果
             const result = await signAndExecute({ transaction: tx });
-            console.log("New pool transaction successful:", result);
-            if (onSuccess) {
-                onSuccess(); // 调用回调刷新数据
+            console.log("Deposit transaction executed:", result);
+
+            // 如果交易成功，调用回调函数
+            if (result && !isError) {
+                onSuccess(); // 调用成功的回调函数
             }
         } catch (error) {
             console.error("Error executing new_pool transaction:", error);
@@ -86,9 +93,13 @@ export default function New_pool({
                     borderRadius: "5px",
                     cursor: "pointer",
                 }}
+                disabled={loading}
             >
-                Deposit
+                {loading ? 'Depositing...' : 'Deposit'}
             </Button>
+
+            {/* 显示状态反馈 */}
+            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </Container>
     );
 }

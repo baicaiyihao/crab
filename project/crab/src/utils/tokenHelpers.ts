@@ -9,6 +9,7 @@ import { SuiClient } from "@mysten/sui/client";
 export async function fetchTokenDecimals(suiClient: SuiClient, coinType: string): Promise<number> {
     try {
         const metadata = await suiClient.getCoinMetadata({ coinType });
+        console.log(metadata);
         if (metadata && metadata.decimals != null) {
             return metadata.decimals;
         } else {

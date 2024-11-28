@@ -4,6 +4,7 @@ import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-ki
 import { useNetworkVariable } from "../config/networkConfig";
 import { handleSplitGas } from "../utils/splitCoinHelper";
 import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL } from "../config/constants";
+import { useState } from "react";
 
 interface WithdrawProps {
     transferInRecordObject: string; // 转账记录对象 ID
@@ -22,17 +23,21 @@ export function Withdraw({
                              extraParam,
                              onSuccess,
                          }: WithdrawProps) {
-    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecute, isError, error, isSuccess } = useSignAndExecuteTransaction();
     const crabPackageId = useNetworkVariable("crabPackageId");
     const currentAccount = useCurrentAccount();
 
-    async function Withdraw_coin() {
+    const [loading, setLoading] = useState(false);
+
+    async function withdrawCoin() {
         if (!currentAccount?.address) {
             console.error("No connected account found.");
             return;
         }
 
         try {
+            setLoading(true); // 设置加载状态
+
             const tx = new Transaction();
             tx.setGasBudget(10000000);
 
@@ -57,16 +62,18 @@ export function Withdraw({
                 target: `${crabPackageId}::demo::withdraw`,
             });
 
-            // Execute the transaction
+            // Execute the transaction and wait for the result
             const result = await signAndExecute({ transaction: tx });
             console.log("Withdraw transaction executed:", result);
 
-            // Trigger the success callback if provided
-            if (onSuccess) {
-                onSuccess();
+            // If the transaction was successful, trigger the success callback
+            if (result && !isError) {
+                onSuccess(); // 调用成功的回调函数
             }
         } catch (error) {
             console.error("Error executing withdraw transaction:", error);
+        } finally {
+            setLoading(false); // 重置加载状态
         }
     }
 
@@ -74,7 +81,7 @@ export function Withdraw({
         <Container>
             <Button
                 size="3"
-                onClick={Withdraw_coin}
+                onClick={withdrawCoin}
                 style={{
                     backgroundColor: "#007bff",
                     color: "#fff",
@@ -82,9 +89,14 @@ export function Withdraw({
                     borderRadius: "5px",
                     cursor: "pointer",
                 }}
+                disabled={loading}
             >
-                Withdraw
+                {loading ? 'Withdrawing...' : 'Withdraw'}
             </Button>
+
+            {/* 显示状态反馈 */}
+            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
+            {isSuccess && <p style={{ color: 'green' }}>Transaction successful!</p>}
         </Container>
     );
 }
