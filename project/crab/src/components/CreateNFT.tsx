@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "../config/networkConfig";
@@ -7,8 +7,10 @@ import { handleSplitGas } from "../utils/splitCoinHelper";
 
 const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
     const currentAccount = useCurrentAccount();
-    const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecute, isError, error } = useSignAndExecuteTransaction();
     const crabPackageId = useNetworkVariable("crabPackageId");
+    const [, setLoading] = useState(false);
+
 
     const create = async () => {
         if (!currentAccount?.address) {
@@ -17,6 +19,8 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
         }
 
         try {
+            setLoading(true); // 设置加载状态
+
             const tx = new Transaction();
             tx.setGasBudget(10000000);
             const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
@@ -31,9 +35,14 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
                 target: `${crabPackageId}::demo::mint_user_nft`,
             });
 
-            await signAndExecute({ transaction: tx });
-            console.log("NFT created successfully!");
-            onSuccess();
+            // 执行交易并等待结果
+            const result = await signAndExecute({ transaction: tx });
+            console.log("Deposit transaction executed:", result);
+
+            // 如果交易成功，调用回调函数
+            if (result && !isError) {
+                onSuccess(); // 调用成功的回调函数
+            }
         } catch (error) {
             console.error("Error creating NFT:", error);
         }
@@ -47,6 +56,7 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
             >
                 创建 NFT
             </button>
+            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </div>
     );
 };

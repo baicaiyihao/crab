@@ -30,6 +30,7 @@ const Pools: React.FC = () => {
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
 
+
     // 搜索和分页逻辑
     const filteredData = useMemo(() => {
         return poolInfoList.filter((pool) =>
