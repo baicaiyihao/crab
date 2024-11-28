@@ -69,9 +69,7 @@ const Points: React.FC = () => {
     }
 
     useEffect(() => {
-        if (account?.address) {
             fetchUserPoints();
-        }
     }, [account]);
 
     // 搜索和分页逻辑

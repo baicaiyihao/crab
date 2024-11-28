@@ -96,9 +96,7 @@ const Risk: React.FC = () => {
     }
 
     useEffect(() => {
-        if (account?.address) {
             fetchScamCoinInfo();
-        }
     }, [account]);
 
     // 搜索功能
