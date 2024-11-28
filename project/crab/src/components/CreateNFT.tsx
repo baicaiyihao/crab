@@ -1,16 +1,16 @@
-import { Transaction } from "@mysten/sui/transactions";
+import React from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariable } from "../config/networkConfig";
-import {TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_USERNFTTABLE, TESTNET_USERSTATE} from "../config/constants";
-import {handleSplitGas} from "../utils/splitCoinHelper";
+import { TESTNET_GAS_AMOUNTS, TESTNET_GASPOOL, TESTNET_USERNFTTABLE, TESTNET_USERSTATE } from "../config/constants";
+import { handleSplitGas } from "../utils/splitCoinHelper";
 
-export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
+const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
     const currentAccount = useCurrentAccount();
-    const crabPackageId = useNetworkVariable("crabPackageId");
     const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+    const crabPackageId = useNetworkVariable("crabPackageId");
 
-    // 创建 NFT 函数
-    async function create() {
+    const create = async () => {
         if (!currentAccount?.address) {
             console.error("No connected account found.");
             return;
@@ -20,7 +20,7 @@ export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
             const tx = new Transaction();
             tx.setGasBudget(10000000);
             const newCoin = await handleSplitGas(tx, currentAccount.address, TESTNET_GAS_AMOUNTS);
-            // 构建交易
+
             tx.moveCall({
                 arguments: [
                     tx.object(TESTNET_GASPOOL),
@@ -31,38 +31,24 @@ export default function CreateNFT({ onSuccess }: { onSuccess: () => void }) {
                 target: `${crabPackageId}::demo::mint_user_nft`,
             });
 
-
-            // 签名并执行交易
-            signAndExecute({
-                transaction: tx,
-            });
-
+            await signAndExecute({ transaction: tx });
             console.log("NFT created successfully!");
-            if (onSuccess) {
-                onSuccess(); // 调用回调刷新数据
-            }
+            onSuccess();
         } catch (error) {
             console.error("Error creating NFT:", error);
         }
-    }
+    };
 
-    // 样式化组件
     return (
-        <div style={{ padding: "20px" }}>
+        <div>
             <button
-                style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#007bff",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    marginBottom: "20px",
-                }}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
                 onClick={create}
             >
-                创建NFT
+                创建 NFT
             </button>
         </div>
     );
-}
+};
+
+export default CreateNFT;
