@@ -89,7 +89,7 @@ export default function New_pool({
                 className="mark-as-scam-button"
                 disabled={loading}
             >
-                {loading ? 'Depositing...' : 'Deposit'}
+                Recycle
             </Button>
 
         </Container>

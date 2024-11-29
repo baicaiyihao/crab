@@ -3,7 +3,7 @@ import GetTransferDetails from "../pages/GetTransferInfo";
 import Getcoininfo from "../pages/Getcoininfo";
 
 export default function Dashboard() {
-    const [activeTab, setActiveTab] = useState("transferDetails"); // 控制当前选中的标签
+    const [activeTab, setActiveTab] = useState("coinInfo"); // 控制当前选中的标签
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -80,6 +80,15 @@ export default function Dashboard() {
 
             {/* 主体内容 */}
             <div className="w-full h-[calc(100vh-96px)]"> {/* 设置内容区域占满视口 */}
+                {activeTab === "coinInfo" && (
+                    <div className="bg-[#29263A] p-6 rounded-lg shadow-md w-full h-full">
+                        {/* 新增的英文内容 */}
+                        <div className="mb-4 text-[#AEAEAE] font-medium text-lg">
+                            Please select the token you want to recycle.
+                        </div>
+                        <Getcoininfo />
+                    </div>
+                )}
                 {/* 根据选中的标签展示不同内容 */}
                 {activeTab === "transferDetails" && (
                     <div className="bg-[#29263A] p-6 rounded-lg shadow-md w-full h-full">
@@ -91,15 +100,7 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {activeTab === "coinInfo" && (
-                    <div className="bg-[#29263A] p-6 rounded-lg shadow-md w-full h-full">
-                        {/* 新增的英文内容 */}
-                        <div className="mb-4 text-[#AEAEAE] font-medium text-lg">
-                            Please select the token you want to recycle.
-                        </div>
-                        <Getcoininfo />
-                    </div>
-                )}
+
             </div>
 
         </div>

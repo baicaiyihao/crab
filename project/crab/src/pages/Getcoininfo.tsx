@@ -8,6 +8,7 @@ import Deposit from "../components/deposit";
 import { fetchPoolIdForCoin } from "../utils/poolHelpers"; // 导入 helper
 import { fetchTokenDecimals } from "../utils/tokenHelpers";
 import suiClient from "../cli/suiClient";
+import NFTModal from "../components/NFTModal";
 
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
@@ -17,6 +18,8 @@ export default function GetCoinInfo() {
     const [coinPoolMap, setCoinPoolMap] = useState<{ [coinType: string]: string | null }>({});
     const [isLoading, setIsLoading] = useState<boolean>(true); // 新增加载状态
     const [copiedCoinType, setCopiedCoinType] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
 
     const formatCoinType = (coinType: string): string => {
         if (coinType.length > 20) {
@@ -174,7 +177,22 @@ export default function GetCoinInfo() {
                                                     />
                                                 )
                                             ) : (
-                                                <p className="text-red-500">No DemoNFT found</p>
+                                                <div>
+                                                    <button
+                                                        className="mark-as-scam-button"
+                                                        onClick={() => setIsModalOpen(true)}
+                                                    >
+                                                        Recycle
+                                                    </button>
+                                                    {isModalOpen && (
+                                                        <NFTModal
+                                                            onClose={() => setIsModalOpen(false)}
+                                                            onSuccess={() => {
+                                                                setIsModalOpen(false);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
