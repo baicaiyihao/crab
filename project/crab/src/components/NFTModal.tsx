@@ -33,7 +33,6 @@ const NFTModal: React.FC<NFTModalProps> = ({ onClose, onSuccess }) => {
                     To ensure secure operations and unlock more features, please create your NFT identity first.
                 </p>
 
-                {/* 创建 NFT 按钮 */}
                 {/* 创建 NFT 按钮放置在底部 */}
                 <div
                     className="button-container"

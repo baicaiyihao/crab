@@ -85,7 +85,7 @@ export function Withdraw({
                 className="mark-as-scam-button"
                 disabled={loading}
             >
-                {loading ? 'Withdrawing...' : 'Withdraw'}
+                Retrieve
             </Button>
         </Container>
     );

@@ -92,7 +92,7 @@ export default function Deposit({
                 className="mark-as-scam-button"
                 disabled={loading}
             >
-                {loading ? 'Depositing...' : 'Deposit'}
+                Recycle
             </Button>
 
         </Container>

@@ -6,7 +6,7 @@
     max-height: 290px; /* 限制弹窗的最大高度 */
     background: #230728;
     border: 1px solid #6B1A8A;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     border-radius: 16px;
     padding: 20px; /* 给上下左右统一的内边距 */
     display: flex;
@@ -73,7 +73,6 @@
 }
 
 
-/* 创建 NFT 按钮容器 */
 .button-container {
     display: flex;
     justify-content: center;
@@ -81,11 +80,12 @@
     padding: 8px 24px;
     background: #9E20CF;
     border-radius: 12px;
-    width: 440px; /* 按钮宽度 */
+    width: 160px; /* 按钮宽度 */
     height: 42px;
     cursor: pointer;
-    margin-top: 120px; /* 调整文字与上面元素的间距 */
+    margin: 120px auto 0;
 }
+
 
 /* 按钮文本 */
 .button-text {
