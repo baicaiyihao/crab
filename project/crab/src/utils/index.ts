@@ -20,7 +20,6 @@ export const getUserProfile = async (address: string): Promise<CategorizedObject
       },
       cursor: nextCursor, // 设置游标
     });
-    console.log(response);
 
     allObjects = allObjects.concat(response.data); // 将获取的对象添加到所有对象数组
     hasNextPage = response.hasNextPage; // 更新是否有下一页
