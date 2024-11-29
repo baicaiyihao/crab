@@ -28,7 +28,7 @@ export default function New_pool({
                              extraParam,
                              onSuccess
                          }: NewPoolProps) {
-    const { mutateAsync: signAndExecute, isError, error } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecute, isError } = useSignAndExecuteTransaction();
     const currentAccount = useCurrentAccount();
 
     const [loading, setLoading] = useState(false);
@@ -86,20 +86,12 @@ export default function New_pool({
             <Button
                 size="3"
                 onClick={executeNewPool}
-                style={{
-                    backgroundColor: "#007bff",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                }}
+                className="mark-as-scam-button"
                 disabled={loading}
             >
                 {loading ? 'Depositing...' : 'Deposit'}
             </Button>
 
-            {/* 显示状态反馈 */}
-            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </Container>
     );
 }
