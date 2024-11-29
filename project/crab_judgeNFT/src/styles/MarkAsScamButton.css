@@ -1,0 +1,38 @@
+/* 默认按钮样式 */
+.mark-as-scam-button {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 12px;
+
+    width: 182px;
+    height: 42px;
+
+    background: #221725;
+    border-radius: 12px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+/* 悬停和点击后的样式 */
+.mark-as-scam-button:hover,
+.mark-as-scam-button:active {
+    background: #9E20CF;
+
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: -0.01em;
+}
