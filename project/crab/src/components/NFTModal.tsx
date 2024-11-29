@@ -1,5 +1,6 @@
 import React from "react";
 import CreateNFT from "./CreateNFT";
+import "../styles/NFTModal.css"; // 导入样式文件
 
 interface NFTModalProps {
     onClose: () => void;
@@ -13,21 +14,31 @@ const NFTModal: React.FC<NFTModalProps> = ({ onClose, onSuccess }) => {
             onClick={onClose} // 点击背景关闭弹窗
         >
             <div
-                className="bg-white rounded-lg shadow-lg p-6 w-[300px]"
+                className="box"
                 onClick={(e) => e.stopPropagation()} // 阻止事件冒泡
             >
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold">Create NFT</h2>
+                {/* 标题部分 */}
+                <div className="title-bar">
+                    <h2 className="title">Create NFT Identity</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="close-btn"
                     >
                         ×
                     </button>
                 </div>
-                <p className="mb-4">点击按钮以创建您的 NFT。</p>
-                <div className="button-container">
-                    <CreateNFT onSuccess={onSuccess}/>
+
+                {/* 提示文字部分 */}
+                <p className="message">
+                    To ensure secure operations and unlock more features, please create your NFT identity first.
+                </p>
+
+                {/* 创建 NFT 按钮 */}
+                {/* 创建 NFT 按钮放置在底部 */}
+                <div
+                    className="button-container"
+                >
+                    <CreateNFT onSuccess={onSuccess} />
                 </div>
             </div>
         </div>

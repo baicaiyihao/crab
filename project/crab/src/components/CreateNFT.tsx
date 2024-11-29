@@ -51,13 +51,10 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
     return (
         <div>
             <button
-                className="bg-[#9E20CF] text-white py-[8px] px-[24px] rounded-[12px] flex items-center justify-center gap-[12px] w-[440px] h-[42px] absolute left-[calc(50%-440px/2)] top-[8px] text-[18px] font-semibold"
                 onClick={create}
+                className="button-text"
             >
-        <span
-            className="w-[140px] h-[28px] flex items-center justify-center text-center text-[18px] font-semibold leading-[28px] text-white">
-            Create NFT Now
-        </span>
+            Create NFT
             </button>
         </div>
 
