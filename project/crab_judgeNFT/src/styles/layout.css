@@ -1,0 +1,36 @@
+/* layout.css */
+
+/* 整体背景样式 */
+.layout-background {
+    background-image: url("../assets/home/background.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+}
+
+.footer-background {
+    background-image: url("../assets/home/footerbackground.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* 导航栏背景样式 */
+.navbar-background {
+    background-image: url("../assets/home/navbackground.webp");
+    background-size: cover;
+    background-position: center;
+    max-width: 2400px;
+}
+
+/* Logo 样式 */
+.logo {
+    width: 162px;
+    height: 96px;
+    background-image: url("../assets/home/logo.webp");
+    background-size: cover;
+    background-position: center;
+}
