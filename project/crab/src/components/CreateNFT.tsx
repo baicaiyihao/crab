@@ -7,7 +7,7 @@ import { handleSplitGas } from "../utils/splitCoinHelper";
 
 const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
     const currentAccount = useCurrentAccount();
-    const { mutateAsync: signAndExecute, isError, error } = useSignAndExecuteTransaction();
+    const { mutateAsync: signAndExecute, isError } = useSignAndExecuteTransaction();
     const crabPackageId = useNetworkVariable("crabPackageId");
     const [, setLoading] = useState(false);
 
@@ -51,13 +51,17 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
     return (
         <div>
             <button
-                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                className="bg-[#9E20CF] text-white py-[8px] px-[24px] rounded-[12px] flex items-center justify-center gap-[12px] w-[440px] h-[42px] absolute left-[calc(50%-440px/2)] top-[8px] text-[18px] font-semibold"
                 onClick={create}
             >
-                创建 NFT
+        <span
+            className="w-[140px] h-[28px] flex items-center justify-center text-center text-[18px] font-semibold leading-[28px] text-white">
+            Create NFT Now
+        </span>
             </button>
-            {isError && <p style={{ color: 'red' }}>Error: {error.message}</p>}
         </div>
+
+
     );
 };
 

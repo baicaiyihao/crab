@@ -26,7 +26,9 @@ const NFTModal: React.FC<NFTModalProps> = ({ onClose, onSuccess }) => {
                     </button>
                 </div>
                 <p className="mb-4">点击按钮以创建您的 NFT。</p>
-                <CreateNFT onSuccess={onSuccess} />
+                <div className="button-container">
+                    <CreateNFT onSuccess={onSuccess}/>
+                </div>
             </div>
         </div>
     );
