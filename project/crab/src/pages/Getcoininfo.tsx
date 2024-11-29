@@ -15,10 +15,20 @@ export default function GetCoinInfo() {
     const [tokenDecimals, setTokenDecimals] = useState<{ [coinType: string]: number }>({});
     const [demoNftId, setDemoNftId] = useState<string | null>(null);
     const [coinPoolMap, setCoinPoolMap] = useState<{ [coinType: string]: string | null }>({});
+    const [isLoading, setIsLoading] = useState<boolean>(true); // 新增加载状态
+    const [copiedCoinType, setCopiedCoinType] = useState<string | null>(null);
 
+    const formatCoinType = (coinType: string): string => {
+        if (coinType.length > 20) {
+            return `${coinType.slice(0, 6)}...${coinType.slice(-4)}`;
+        }
+        return coinType;
+    };
     async function refreshUserProfile() {
         if (account?.address) {
             try {
+                setIsLoading(true); // 开始加载时设置为 true
+
                 const profile = await getUserProfile(account.address);
                 setUserObjects(profile);
 
@@ -46,8 +56,11 @@ export default function GetCoinInfo() {
                 } else {
                     setDemoNftId(null);
                 }
+
             } catch (error) {
                 console.error("Error fetching user profile:", error);
+            } finally {
+                setIsLoading(false); // 数据加载完毕后设置为 false
             }
         }
     }
@@ -63,6 +76,12 @@ export default function GetCoinInfo() {
         return `${integer}.${decimal}`;
     };
 
+    const handleCopyCoinType = (coinType: string) => {
+        navigator.clipboard.writeText(coinType);
+        setCopiedCoinType(coinType);
+        setTimeout(() => setCopiedCoinType(null), 2000); // 2秒后清除已复制标识
+    };
+
     return (
         <div className="mt-8">
             {/* Token List Table */}
@@ -70,68 +89,20 @@ export default function GetCoinInfo() {
                 <table className="w-full text-left text-white border-collapse">
                     <thead className="bg-[#29263A]">
                     <tr>
+                        <th className="px-6 py-3 border border-gray-700">#</th> {/* 序号 */}
                         <th className="px-6 py-3 border border-gray-700">Token</th>
                         <th className="px-6 py-3 border border-gray-700">Total Balance</th>
                         <th className="px-6 py-3 border border-gray-700">Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {userObjects != null && userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
-                        Object.entries(userObjects.coins).map(([coinType, coins], index) => {
-                            const coinObjectIds = coins.map((coin) => coin.data?.objectId || "N/A");
-                            const totalBalance = calculateTotalBalance(coins);
-
-                            const decimals = tokenDecimals[coinType] ?? 9;
-                            const formattedBalance = formatTokenBalance(
-                                totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
-                                decimals
-                            );
-                            const poolId = coinPoolMap[coinType];
-
-                            return (
-                                <tr
-                                    key={index}
-                                    className={`${
-                                        index % 2 === 0 ? "bg-[#26223B]" : "bg-[#29263A]"
-                                    } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
-                                >
-                                    <td className="px-6 py-4 border border-gray-700">{coinType.split("::").pop()}</td>
-                                    <td className="px-6 py-4 border border-gray-700">{formattedBalance}</td>
-                                    <td className="px-6 py-4 border border-gray-700">
-                                        {demoNftId ? (
-                                            poolId ? (
-                                                <Deposit
-                                                    coinType={coinType}
-                                                    poolId={poolId}
-                                                    coinObjects={coinObjectIds}
-                                                    demoNftId={demoNftId}
-                                                    transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                    extraParam={TESTNET_TIME}
-                                                    onSuccess={refreshUserProfile}
-                                                />
-                                            ) : (
-                                                <New_pool
-                                                    crabPackageId={TESTNET_CRAB_PACKAGE_ID}
-                                                    coinType={coinType}
-                                                    coinObjects={coinObjectIds}
-                                                    poolTableId={TESTNET_POOLTABLE}
-                                                    demoNftId={demoNftId}
-                                                    transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                    extraParam={TESTNET_TIME}
-                                                    onSuccess={refreshUserProfile}
-                                                />
-                                            )
-                                        ) : (
-                                            <p className="text-red-500">No DemoNFT found</p>
-                                        )}
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    ) : (
-                        // Loading skeleton animation
+                    {isLoading ? (
+                        // 如果加载中，显示动画
                         Array.from({ length: 5 }).map((_, index) => (
                             <tr key={index} className="bg-[#29263A] border-b animate-pulse">
+                                <td className="px-6 py-4 border border-gray-700">
+                                    <div className="w-6 h-6 bg-gray-500 rounded-md"></div>
+                                </td>
                                 <td className="px-6 py-4 border border-gray-700">
                                     <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
                                 </td>
@@ -143,6 +114,77 @@ export default function GetCoinInfo() {
                                 </td>
                             </tr>
                         ))
+                    ) : (
+                        // 数据加载完成后显示表格内容
+                        userObjects != null && userObjects.coins && Object.entries(userObjects.coins).length > 0 ? (
+                            Object.entries(userObjects.coins).map(([coinType, coins], index) => {
+                                const coinObjectIds = coins.map((coin) => coin.data?.objectId || "N/A");
+                                const totalBalance = calculateTotalBalance(coins);
+
+                                const decimals = tokenDecimals[coinType] ?? 9;
+                                const formattedBalance = formatTokenBalance(
+                                    totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
+                                    decimals
+                                );
+                                const poolId = coinPoolMap[coinType];
+
+                                return (
+                                    <tr
+                                        key={index}
+                                        className={`${
+                                            index % 2 === 0 ? "bg-[#26223B]" : "bg-[#29263A]"
+                                        } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
+                                    >
+                                        <td className="px-6 py-4 border border-gray-700">{index + 1}</td> {/* 序号 */}
+                                        <td className="px-6 py-4 border border-gray-700">
+                                            <div className="font-bold text-purple-300">{coinType.split("::").pop()}</div>
+                                            <div
+                                                className="text-sm text-gray-400 cursor-pointer relative group"
+                                                onClick={() => handleCopyCoinType(coinType)}
+                                            >
+                                                <span>{`${formatCoinType(coinType)}`}</span>
+                                                {copiedCoinType === coinType && (
+                                                    <span className="ml-2 text-green-500">☑️</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 border border-gray-700">{formattedBalance}</td>
+                                        <td className="px-6 py-4 border border-gray-700">
+                                            {demoNftId ? (
+                                                poolId ? (
+                                                    <Deposit
+                                                        coinType={coinType}
+                                                        poolId={poolId}
+                                                        coinObjects={coinObjectIds}
+                                                        demoNftId={demoNftId}
+                                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                                        extraParam={TESTNET_TIME}
+                                                        onSuccess={refreshUserProfile}
+                                                    />
+                                                ) : (
+                                                    <New_pool
+                                                        crabPackageId={TESTNET_CRAB_PACKAGE_ID}
+                                                        coinType={coinType}
+                                                        coinObjects={coinObjectIds}
+                                                        poolTableId={TESTNET_POOLTABLE}
+                                                        demoNftId={demoNftId}
+                                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                                        extraParam={TESTNET_TIME}
+                                                        onSuccess={refreshUserProfile}
+                                                    />
+                                                )
+                                            ) : (
+                                                <p className="text-red-500">No DemoNFT found</p>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="px-6 py-4 text-center text-red-500">No tokens found</td>
+                            </tr>
+                        )
                     )}
                     </tbody>
                 </table>
