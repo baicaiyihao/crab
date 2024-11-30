@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
     TESTNET_TRANSFERRECORDPOOL,
     TESTNET_POOLTABLE,
@@ -19,8 +19,11 @@ const GetTransferDetails = () => {
     const [userTransferDetails, setUserTransferDetails] = useState<any[]>([]);
     const [tokenDecimals, setTokenDecimals] = useState<{ [coinType: string]: number }>({});
     const [demoNftId, setDemoNftId] = useState<string | null>(null);
-    const [copiedAssetType, setCopiedAssetType] = useState<string | null>(null); // 用于存储复制的 assetType
-    const [isLoading, setIsLoading] = useState<boolean>(true); // 新增加载状态
+    const [copiedAssetType, setCopiedAssetType] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const formatCoinType = (coinType: string): string => {
         if (coinType.length > 20) {
@@ -141,6 +144,15 @@ const GetTransferDetails = () => {
         }
     }
 
+    const paginatedData = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return userTransferDetails.slice(startIndex, startIndex + itemsPerPage);
+    }, [userTransferDetails, currentPage, itemsPerPage]);
+
+    const totalPages = useMemo(() => {
+        return Math.ceil(userTransferDetails.length / itemsPerPage);
+    }, [userTransferDetails, itemsPerPage]);
+
     useEffect(() => {
         fetchTransferInfo();
     }, [account]);
@@ -148,7 +160,7 @@ const GetTransferDetails = () => {
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text).then(() => {
             setCopiedAssetType(text);
-            setTimeout(() => setCopiedAssetType(null), 2000); // 2秒后恢复状态
+            setTimeout(() => setCopiedAssetType(null), 2000);
         }).catch((error) => {
             console.error('Failed to copy:', error);
         });
@@ -157,16 +169,15 @@ const GetTransferDetails = () => {
     return (
         <div className="mt-8">
             <div className="overflow-hidden rounded-lg bg-[#1F1B2D] border border-purple-600">
-                {/* 主要内容区域 */}
-                <div className="overflow-x-auto bg-[#29263A] rounded-lg border border-[#2E2E2E]">
-                    <table className="min-w-full table-auto text-left text-white border-collapse">
+                <div className="overflow-x-auto bg-[#1F1B2D] rounded-lg border border-purple-600">
+                    <table className="w-full text-left text-white border-collapse">
                         <thead className="bg-[#29263A]">
                         <tr>
-                            <th className="px-6 py-3 border border-gray-700">#</th> {/* 排序序号 */}
-                            <th className="px-6 py-3 border border-gray-700">Token</th>
-                            <th className="px-6 py-3 border border-gray-700">Amount</th>
-                            <th className="px-6 py-3 border border-gray-700">Timestamp</th>
-                            <th className="px-6 py-3 border border-gray-700">Action</th>
+                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">#</th>
+                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Token</th>
+                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Amount</th>
+                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Timestamp</th>
+                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -174,27 +185,27 @@ const GetTransferDetails = () => {
                             // 加载动画
                             Array.from({ length: 5 }).map((_, index) => (
                                 <tr key={index} className="bg-[#29263A] border-b animate-pulse">
-                                    <td className="px-6 py-4 border border-gray-700">
+                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
                                         <div className="w-12 h-6 bg-gray-500 rounded-md"></div>
                                     </td>
-                                    <td className="px-6 py-4 border border-gray-700">
+                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
                                         <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
                                     </td>
-                                    <td className="px-6 py-4 border border-gray-700">
+                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
                                         <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
                                     </td>
-                                    <td className="px-6 py-4 border border-gray-700">
+                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
                                         <div className="w-40 h-6 bg-gray-500 rounded-md"></div>
                                     </td>
-                                    <td className="px-6 py-4 border border-gray-700">
+                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
                                         <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
                                     </td>
                                 </tr>
                             ))
-                        ) : userTransferDetails.length > 0 ? (
-                            userTransferDetails.map((detail) => (
+                        ) : paginatedData.length > 0 ? (
+                            paginatedData.map((detail) => (
                                 <tr key={detail.id} className="hover:bg-[#444151] border-t border-[#1E1C28]">
-                                    <td className="px-6 py-4 text-gray-400">{detail.index}</td> {/* 显示排序序号 */}
+                                    <td className="px-6 py-4 text-gray-400">{detail.index}</td>
                                     <td className="px-6 py-4 text-gray-400">
                                         <div className="text-purple-300 font-bold">{detail.assetType}</div>
                                         <div
@@ -240,9 +251,55 @@ const GetTransferDetails = () => {
                     </table>
                 </div>
             </div>
+
+            <div className="flex items-center justify-between mt-6">
+                <div className="flex items-center">
+                    <span className="text-white mr-4">Show:</span>
+                    <select
+                        className="px-4 py-2 rounded-lg border border-gray-700 bg-[#1F1B2D] text-white"
+                        value={itemsPerPage}
+                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                    >
+                        {[10, 20, 50].map((num) => (
+                            <option key={num} value={num}>
+                                {num}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="flex items-center">
+                    <span className="text-white mr-4">Total: {userTransferDetails.length}</span>
+                </div>
+                <div className="flex items-center">
+                    <button
+                        className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    >
+                        &lt;
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                            key={page}
+                            className={`px-4 py-2 mx-1 text-white rounded-md ${
+                                currentPage === page
+                                    ? "bg-purple-600"
+                                    : "bg-[#29263A] hover:bg-[#444151]"
+                            }`}
+                            onClick={() => setCurrentPage(page)}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    >
+                        &gt;
+                    </button>
+                </div>
+            </div>
         </div>
     );
-
 };
 
 export default GetTransferDetails;
