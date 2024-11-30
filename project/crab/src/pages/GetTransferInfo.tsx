@@ -207,7 +207,9 @@ const GetTransferDetails = () => {
                                 <tr key={detail.id} className="hover:bg-[#444151] border-t border-[#1E1C28]">
                                     <td className="px-6 py-4 text-gray-400">{detail.index}</td>
                                     <td className="px-6 py-4 text-gray-400">
-                                        <div className="text-purple-300 font-bold">{detail.assetType}</div>
+                                        <div className="text-purple-300 font-bold">
+                                            {detail.assetType}
+                                        </div>
                                         <div
                                             className="text-sm text-gray-400 cursor-pointer relative group"
                                             onClick={() => handleCopy(detail.fullAssetType)}
