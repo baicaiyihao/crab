@@ -2,8 +2,9 @@ import New_pool from "../components/new_pool";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useState, useMemo } from "react";
 import { getUserProfile } from "../utils";
+import warnCramImage from '../assets/warnCram.png';
 import { CategorizedObjects, calculateTotalBalance } from "../utils/assetsHelpers";
-import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TIME, TESTNET_TRANSFERRECORDPOOL } from "../config/constants";
+import { TESTNET_CRAB_PACKAGE_ID, TESTNET_POOLTABLE, TESTNET_TIME, TESTNET_TRANSFERRECORDPOOL, TESTNET_SCAMCOINPOOL } from "../config/constants";
 import Deposit from "../components/deposit";
 import { fetchPoolIdForCoin } from "../utils/poolHelpers"; // 导入 helper
 import { fetchTokenDecimals } from "../utils/tokenHelpers";
@@ -21,6 +22,7 @@ export default function GetCoinInfo() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [itemsPerPage, setItemsPerPage] = useState(10); // 每页显示的项目数量
     const [currentPage, setCurrentPage] = useState(1); // 当前页码
+    const [scamCoinChecknums, setScamCoinChecknums] = useState<{ [coinType: string]: number }>({});
 
     const formatCoinType = (coinType: string): string => {
         if (coinType.length > 20) {
@@ -36,11 +38,70 @@ export default function GetCoinInfo() {
 
         try {
             setIsLoading(true); // 开始加载时设置为 true
-
             await new Promise(resolve => setTimeout(resolve, 200)); // 延时 2 秒
-
             const profile = await getUserProfile(account.address);
             setUserObjects(profile);
+
+            // 获取诈骗币信息
+            const scamCoinPool = await suiClient.getObject({
+                id: TESTNET_SCAMCOINPOOL,
+                options: { showContent: true },
+            });
+
+            const content = scamCoinPool?.data?.content;
+            if (
+                content?.dataType === "moveObject" &&
+                (content as any)?.fields?.ScamCoin_map
+            ) {
+                const scamCoinMap = (content as any).fields.ScamCoin_map;
+                if (Array.isArray(scamCoinMap)) {
+                    const scamCoins = await Promise.all(
+                        scamCoinMap.map(async (scamCoinInfo) => {
+                            const scamCoinId = scamCoinInfo?.fields?.ScamCoin_id || "Unknown";
+                            const rawCoinType = scamCoinInfo?.fields?.cointype?.fields?.name || "Unknown";
+
+                            if (!scamCoinId || scamCoinId === "Unknown") {
+                                console.warn("Invalid ScamCoin ID, skipping:", scamCoinId);
+                                return null;
+                            }
+
+                            try {
+                                const scamCoinData = await suiClient.getObject({
+                                    id: scamCoinId,
+                                    options: { showContent: true },
+                                });
+
+                                let checknum = 0;
+                                let cointype = "Unknown";
+                                if (scamCoinData?.data?.content) {
+                                    const contentJson = JSON.parse(JSON.stringify(scamCoinData.data.content));
+                                    checknum = parseInt(contentJson?.fields?.checknum || "0", 10);
+                                    cointype = contentJson?.fields?.cointype?.fields?.name || rawCoinType;
+                                    console.log("cointype", cointype);
+                                    console.log("checknum", checknum);
+                                }
+
+                                return {
+                                    name: `0x${cointype}`.split("::").pop(),
+                                    scamCoinId,
+                                    checknum,
+                                    cointype,
+                                };
+                            } catch (error) {
+                                console.error(`Error fetching ScamCoin ID ${scamCoinId}:`, error);
+                                return null;
+                            }
+                        })
+                    );
+
+                    const filteredScamCoins = scamCoins.filter((coin) => coin !== null);
+                    const scamCoinChecknums = filteredScamCoins.reduce((acc, coin) => {
+                        acc[coin.cointype] = coin.checknum;
+                        return acc;
+                    }, {} as { [coinType: string]: number });
+                    setScamCoinChecknums(scamCoinChecknums);
+                }
+            }
 
             const coinTypes = Object.keys(profile.coins || {});
             for (const coinType of coinTypes) {
@@ -66,18 +127,27 @@ export default function GetCoinInfo() {
             } else {
                 setDemoNftId(null);
             }
-
         } catch (error) {
-            console.error("Error fetching user profile:", error);
+            console.error("Error refreshing user profile:", error);
         } finally {
-            setIsLoading(false); // 数据加载完毕后设置为 false
+            setIsLoading(false);
         }
     }
 
     useEffect(() => {
-        // 初始加载时获取用户信息
-        refreshUserProfile();
+        if (account?.address) {
+            refreshUserProfile();
+        }
     }, [account]);
+
+    const paginatedData = useMemo(() => {
+        if (!userObjects || !userObjects.coins) return [];
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        return Object.entries(userObjects.coins).slice(start, end);
+    }, [userObjects, currentPage, itemsPerPage]);
+
+    const totalPages = Math.ceil(Object.keys(userObjects?.coins || {}).length / itemsPerPage);
 
     const formatTokenBalance = (balance: bigint, decimals: number): string => {
         const integer = balance / BigInt(10 ** decimals);
@@ -86,28 +156,13 @@ export default function GetCoinInfo() {
     };
 
     const handleCopyCoinType = (coinType: string) => {
-        navigator.clipboard.writeText(coinType);
-        setCopiedCoinType(coinType);
-        setTimeout(() => setCopiedCoinType(null), 2000); // 2秒后清除已复制标识
+        navigator.clipboard.writeText(coinType).then(() => {
+            setCopiedCoinType(coinType);
+            setTimeout(() => setCopiedCoinType(null), 2000); // 2秒后清除已复制标识
+        }).catch((error) => {
+            console.error('Failed to copy:', error);
+        });
     };
-
-    // 计算分页数据
-    const paginatedData = useMemo(() => {
-        if (userObjects?.coins) {
-            const coinEntries = Object.entries(userObjects.coins);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            return coinEntries.slice(startIndex, startIndex + itemsPerPage);
-        }
-        return [];
-    }, [userObjects, currentPage, itemsPerPage]);
-
-    // 计算总页数
-    const totalPages = useMemo(() => {
-        if (userObjects?.coins) {
-            return Math.ceil(Object.entries(userObjects.coins).length / itemsPerPage);
-        }
-        return 0;
-    }, [userObjects, itemsPerPage]);
 
     return (
         <div className="mt-8">
@@ -146,7 +201,6 @@ export default function GetCoinInfo() {
                             paginatedData.map(([coinType, coins], index) => {
                                 const coinObjectIds = coins.map((coin) => coin.data?.objectId || "N/A");
                                 const totalBalance = calculateTotalBalance(coins);
-
                                 const decimals = tokenDecimals[coinType] ?? 9;
                                 const formattedBalance = formatTokenBalance(
                                     totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
@@ -154,6 +208,8 @@ export default function GetCoinInfo() {
                                 );
                                 const poolId = coinPoolMap[coinType];
 
+                                const cleanCoinType = coinType.replace(/^0x/, '');
+                                let checknum = scamCoinChecknums[cleanCoinType] || 0;
                                 return (
                                     <tr
                                         key={index}
@@ -161,9 +217,16 @@ export default function GetCoinInfo() {
                                             index % 2 === 0 ? "bg-[#29263A]" : "bg-[#26223B]"
                                         } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
                                     >
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">{index + 1}</td> {/* 序号 */}
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">{index + 1}</td>
                                         <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">
-                                            <div className="font-bold text-purple-300">{coinType.split("::").pop()}</div>
+                                            <div className="flex items-center">
+                                                <div className="font-bold text-purple-300 mr-2">{coinType.split("::").pop()}</div>
+                                                {checknum >= 3 && (
+                                                    <span className="text-red-500">
+                                                        <img src={warnCramImage} title="This may be a scam coin" alt="Warning" className="w-4 h-4 inline-block"/>
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div
                                                 className="text-sm text-gray-400 cursor-pointer relative group"
                                                 onClick={() => handleCopyCoinType(coinType)}
@@ -230,7 +293,6 @@ export default function GetCoinInfo() {
                     </tbody>
                 </table>
             </div>
-
             {/* 分页控件 */}
             <div className="flex items-center justify-between mt-6">
                 <div className="flex items-center">
@@ -280,5 +342,4 @@ export default function GetCoinInfo() {
             </div>
         </div>
     );
-
 }
