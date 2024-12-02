@@ -29,6 +29,8 @@ const Pools: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState<boolean>(true); // 新增加载状态
+
 
 
     // 搜索和分页逻辑
@@ -87,6 +89,9 @@ const Pools: React.FC = () => {
     const refreshUserProfile = async () => {
         if (account?.address) {
             try {
+                setIsLoading(true); // 开始加载时设置为 true
+
+                await new Promise(resolve => setTimeout(resolve, 300)); // 延时 2 秒
                 const profile = await getUserProfile(account.address);
 
                 const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
@@ -104,6 +109,8 @@ const Pools: React.FC = () => {
                 }
             } catch (error) {
                 console.error("Error fetching user profile:", error);
+            } finally {
+                setIsLoading(false); // 加载完成后设置为 false
             }
         }
     };
@@ -130,6 +137,8 @@ const Pools: React.FC = () => {
             }
         } catch (error) {
             console.error("Error fetching ScamCoinPool:", error);
+        } finally {
+            setIsLoading(false); // 加载完成后设置为 false
         }
     };
 
@@ -198,6 +207,7 @@ const Pools: React.FC = () => {
             console.error("Error fetching pool info:", error);
         } finally {
             setLoading(false);
+            setIsLoading(false); // 加载完成后设置为 false
         }
     };
 
@@ -207,7 +217,7 @@ const Pools: React.FC = () => {
             fetchPoolInfo();
     }, [account]);
 
-    if (loading) {
+    if (loading || isLoading) {
         return <LoadingSpinner />;
     }
 
@@ -294,6 +304,9 @@ const Pools: React.FC = () => {
                                             <NFTModal
                                                 onClose={() => setIsModalOpen(false)}
                                                 onSuccess={() => {
+                                                    refreshUserProfile();
+                                                    fetchScamCoinPool();
+                                                    fetchPoolInfo();
                                                     setIsModalOpen(false);
                                                 }}
                                             />
