@@ -274,7 +274,9 @@ export default function GetCoinInfo() {
                                                         <NFTModal
                                                             onClose={() => setIsModalOpen(false)}
                                                             onSuccess={() => {
+                                                                refreshUserProfile();
                                                                 setIsModalOpen(false);
+
                                                             }}
                                                         />
                                                     )}
