@@ -1,3 +1,4 @@
+```
 mint nft  
 sui client call --package $packageid --module tabledemo --function mint_user_nft --args $UserNFTTable $Userstate $GasPool $suicoin --gas-budget 100000000  
 Transaction Digest: 4mfADTL4hbLx1ZEmmf1DfRuQ7L1XgPr5qRgi2KCSSE3T
@@ -24,3 +25,4 @@ Transaction Digest: 4bFWLSYRpJAcQJK8rnhaaS2gon2G8YT3YP5b19mtuqaS
   
 add_mark_scam  
 sui client call --package $packageid --module tabledemo --function add_mark_scam --args $ScamCoin $GasPool $suicoin $nft --gas-budget 100000000
+```
