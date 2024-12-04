@@ -1,59 +1,26 @@
-pkgid
-0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e
-
-ScamCoinPool  
-0xc50ad92b4b772b0cdec022bbf515ba352926db026d9c434a282b200c76575af3
-
-PoolTable
-0x32412421ee02981636d2028db0a75d6a46636b443abe1677e34156410b945377
-
-UserNFTTable 
-0x138938ab3c7629a219b5e993a6685c77364e08c66874220b3d3fe37127ac2d58
-
-Userstate 
-0xc629441168954ad452a19ef3d7ac8f7d2005ad1f4ffb047b7106e63da5cbf47e
-
-gaspool
-0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e
-
-nft
-0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee
-
-coinpool
-0x5ec8d344ecd5970f75f68fe1bf72162ccbc298d6a260607a02be863e739b3c25
-
-tran
-0xb1fe17ab5c5af71c840eeefc77e5d0bd6cedd8f82b58607ee89097f130de31c8
-0x81a99516f511344669685c1f85624f208f00a8ac0e47f76f05a1e398809032f5
-
-scancoin
-0xb296a63f10f37f60fbb9f503bf1d803a076bbc8b47c7de72a1488e65fd3f7789
-
-
-mint nft
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function mint_user_nft --args 0x138938ab3c7629a219b5e993a6685c77364e08c66874220b3d3fe37127ac2d58 0xc629441168954ad452a19ef3d7ac8f7d2005ad1f4ffb047b7106e63da5cbf47e 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0x66ea7f769263be43f566f2806070b7e8b66a13b2d262c8221dbb214cba032c19 --gas-budget 100000000
+mint nft  
+sui client call --package $packageid --module tabledemo --function mint_user_nft --args $UserNFTTable $Userstate $GasPool $suicoin --gas-budget 100000000  
 Transaction Digest: 4mfADTL4hbLx1ZEmmf1DfRuQ7L1XgPr5qRgi2KCSSE3T
-
-new_pool
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function new_pool --type-args 0x35f68d0404b0dd676561abf3049031616658b6fd33bb50d05f198a47ca112b6f::al17er_coin::AL17ER_COIN --args 0x66ace74c49209482bec4f148fc0e3018f97da60c0853710361223a44bfcccad1 0x32412421ee02981636d2028db0a75d6a46636b443abe1677e34156410b945377 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0x67480d4ee5602edbc0ac41741103c0e7e0cd7a08c09b7586d1bce990c2418317 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee 0x6 --gas-budget 100000000
+  
+new_pool  
+sui client call --package $packageid --module tabledemo --function new_pool --type-args $cointype --args $Coin $PoolTable $GasPool $suicoin $nft 0x6 --gas-budget 100000000  
 Transaction Digest: 2yWKpfnjarNipR473Sa5phArF7KYZRhtxwzY2NqWdkUv
-
-deposit
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function deposit --type-args 0x35f68d0404b0dd676561abf3049031616658b6fd33bb50d05f198a47ca112b6f::al17er_coin::AL17ER_COIN --args 0x1e83e714bd31142256774749cb6b6f5d63c5004b83fac301c4c61419c060f086 0x5ec8d344ecd5970f75f68fe1bf72162ccbc298d6a260607a02be863e739b3c25 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0x7c990c837f74f751c95aad42e4c3a1c2b26cfdd4df2ebdbe39b5eb95868bd267 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee 0x6 --gas-budget 100000000
+  
+deposit  
+sui client call --package $packageid --module tabledemo --function deposit --type-args $cointype --args $Coin $CoinPool $GasPool $suicoin $nft 0x6 --gas-budget 100000000  
 Transaction Digest: C8AAKDTdtcUzZVadRBVfLUFjVx865b9VaNT4qep3X8Xv
-
-withdraw
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function withdraw --type-args 0x35f68d0404b0dd676561abf3049031616658b6fd33bb50d05f198a47ca112b6f::al17er_coin::AL17ER_COIN --args 0x5ec8d344ecd5970f75f68fe1bf72162ccbc298d6a260607a02be863e739b3c25 0xb1fe17ab5c5af71c840eeefc77e5d0bd6cedd8f82b58607ee89097f130de31c8 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0x4855431ff3a4cdb93fe65b81de4300c298dcc798bfd30715419fb7b1660c1e54 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee 0x6 --gas-budget 100000000
+  
+withdraw  
+sui client call --package $packageid --module tabledemo --function withdraw --type-args $cointype --args $CoinPool $transferinrecordid $GasPool $suicoin $nft 0x6 --gas-budget 100000000  
 Transaction Digest: DV3frfZ65JeAcqQjkroaUkrTgCRgwWgce5F7R9WUovWV
-
-
-new_mark_scam
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function new_mark_scam --type-args 0x35f68d0404b0dd676561abf3049031616658b6fd33bb50d05f198a47ca112b6f::al17er_coin::AL17ER_COIN --args 0x5ec8d344ecd5970f75f68fe1bf72162ccbc298d6a260607a02be863e739b3c25 0xc50ad92b4b772b0cdec022bbf515ba352926db026d9c434a282b200c76575af3 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0x8bbc8ed59add3cf32320397d03e5100d78449bbc1f02f921cf98d5b4317ca302 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee --gas-budget 100000000
+  
+new_mark_scam  
+sui client call --package $packageid  --module tabledemo --function new_mark_scam --type-args $cointype --args $CoinPool $ScamCoinPool $GasPool $suicoin $nft --gas-budget 100000000  
 Transaction Digest: J8j31fcpN2sqs4iRiK8qNSRgYtkj9GudVdjrTmfKN551
-
-delect_mark_scam
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function cancal_mark_scam --args 0xb296a63f10f37f60fbb9f503bf1d803a076bbc8b47c7de72a1488e65fd3f7789 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0xb6c7512a7baccd0b2ef1455bd0bedbc1fcbaac9465cbf65446d2651160969ce0 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee --gas-budget 100000000
+  
+delect_mark_scam  
+sui client call --package $packageid  --module tabledemo --function cancal_mark_scam --args $ScamCoin $GasPool $suicoin $nft --gas-budget 100000000  
 Transaction Digest: 4bFWLSYRpJAcQJK8rnhaaS2gon2G8YT3YP5b19mtuqaS
-
-add_mark_scam
-sui client call --package 0x19b156197d9b5a5e4e84b936a1742b51e625bbfb62253719768bb689ea3acc7e --module tabledemo --function add_mark_scam --args 0xb296a63f10f37f60fbb9f503bf1d803a076bbc8b47c7de72a1488e65fd3f7789 0x3f09740655a9107022ce4510c8d15679a2c6cc5fab8ef4d628fca5bb1e54173e 0xd67322ed316506ffd03a831bb52a3c090ebdb16f79db1e3375eb2ffc8540f8a2 0xe0734b7be898f133d3c62438782bf8054bb5fca3faf7d8a905d1628fd8fe78ee --gas-budget 100000000
+  
+add_mark_scam  
+sui client call --package $packageid --module tabledemo --function add_mark_scam --args $ScamCoin $GasPool $suicoin $nft --gas-budget 100000000
