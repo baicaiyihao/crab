@@ -9,4 +9,4 @@ export default {
     extend: {}, // 你可以在这里自定义主题
   },
   plugins: [], // 添加需要的 Tailwind 插件
-};这样配置的话没地方调用也没关系吗
+};
