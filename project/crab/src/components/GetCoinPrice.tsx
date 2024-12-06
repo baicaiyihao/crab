@@ -61,7 +61,6 @@ export default class GetCoinPrice extends Component<KuayuProps, KuayuState> {
     try {
       const url = `http://103.76.128.110:40374/priapi/v1/dx/market/v2/search?keyword=${encodeURIComponent(coin)}&chainId=all&userUniqueId=838942D9-41FC-4D31-8673-3CEB3D2E8E3A&t=1733364066679`;
       let response = await fetch(url);
-      console.log(url);
       if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
       }

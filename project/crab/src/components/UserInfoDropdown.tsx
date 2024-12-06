@@ -149,7 +149,6 @@ const UserInfoDropdown: React.FC = () => {
             });
 
             const result = await signAndExecute({ transaction: tx });
-            console.log("Deposit transaction executed:", result);
 
             if (result && !isError) {
                 await fetchUserInfo();
