@@ -52,53 +52,53 @@ export default function GetCoinInfo() {
 
             const content = scamCoinPool?.data?.content;
             if (
-                content?.dataType === "moveObject" &&
-                (content as any)?.fields?.ScamCoin_map
+              content?.dataType === "moveObject" &&
+              (content as any)?.fields?.ScamCoin_map
             ) {
                 const scamCoinMap = (content as any).fields.ScamCoin_map;
                 if (Array.isArray(scamCoinMap)) {
                     const scamCoins = await Promise.all(
-                        scamCoinMap.map(async (scamCoinInfo) => {
-                            const scamCoinId = scamCoinInfo?.fields?.ScamCoin_id || "Unknown";
-                            const rawCoinType = scamCoinInfo?.fields?.cointype?.fields?.name || "Unknown";
+                      scamCoinMap.map(async (scamCoinInfo) => {
+                          const scamCoinId = scamCoinInfo?.fields?.ScamCoin_id || "Unknown";
+                          const rawCoinType = scamCoinInfo?.fields?.cointype?.fields?.name || "Unknown";
 
-                            if (!scamCoinId || scamCoinId === "Unknown") {
-                                console.warn("Invalid ScamCoin ID, skipping:", scamCoinId);
-                                return null;
-                            }
+                          if (!scamCoinId || scamCoinId === "Unknown") {
+                              console.warn("Invalid ScamCoin ID, skipping:", scamCoinId);
+                              return null;
+                          }
 
-                            try {
-                                const scamCoinData = await suiClient.getObject({
-                                    id: scamCoinId,
-                                    options: { showContent: true },
-                                });
+                          try {
+                              const scamCoinData = await suiClient.getObject({
+                                  id: scamCoinId,
+                                  options: { showContent: true },
+                              });
 
-                                let checknum = 0;
-                                let cointype = "Unknown";
-                                if (scamCoinData?.data?.content) {
-                                    const contentJson = JSON.parse(JSON.stringify(scamCoinData.data.content));
-                                    checknum = parseInt(contentJson?.fields?.checknum || "0", 10);
-                                    cointype = contentJson?.fields?.cointype?.fields?.name || rawCoinType;
-                                    console.log("cointype", cointype);
-                                    console.log("checknum", checknum);
-                                }
+                              let checknum = 0;
+                              let cointype = "Unknown";
+                              if (scamCoinData?.data?.content) {
+                                  const contentJson = JSON.parse(JSON.stringify(scamCoinData.data.content));
+                                  checknum = parseInt(contentJson?.fields?.checknum || "0", 10);
+                                  cointype = contentJson?.fields?.cointype?.fields?.name || rawCoinType;
+                              }
 
-                                return {
-                                    name: `0x${cointype}`.split("::").pop(),
-                                    scamCoinId,
-                                    checknum,
-                                    cointype,
-                                };
-                            } catch (error) {
-                                console.error(`Error fetching ScamCoin ID ${scamCoinId}:`, error);
-                                return null;
-                            }
-                        })
+                              return {
+                                  name: `0x${cointype}`.split("::").pop(),
+                                  scamCoinId,
+                                  checknum,
+                                  cointype,
+                              };
+                          } catch (error) {
+                              console.error(`Error fetching ScamCoin ID ${scamCoinId}:`, error);
+                              return null;
+                          }
+                      })
                     );
 
                     const filteredScamCoins = scamCoins.filter((coin) => coin !== null);
                     const scamCoinChecknums = filteredScamCoins.reduce((acc, coin) => {
-                        acc[coin.cointype] = coin.checknum;
+                        if (coin !== null) {
+                            acc[coin.cointype]=coin.checknum;
+                        }
                         return acc;
                     }, {} as { [coinType: string]: number });
                     setScamCoinChecknums(scamCoinChecknums);
@@ -117,7 +117,7 @@ export default function GetCoinInfo() {
             }
 
             const demoNftObject = Object.entries(profile.objects || {}).find(([objectType]) =>
-                objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
+              objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
             );
             if (demoNftObject) {
                 const demoNftInstances = demoNftObject[1];
@@ -167,199 +167,196 @@ export default function GetCoinInfo() {
     };
 
     return (
-        <div className="mt-8">
-            {/* Token List Table */}
-            <div className="overflow-hidden rounded-lg bg-[#1F1B2D] border border-purple-600">
-                <table className="w-full text-left text-white border-collapse">
-                    <thead className="bg-[#29263A]">
-                    <tr>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >#</th> {/* 序号 */}
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Token</th>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Price</th>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Total Balance</th>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {isLoading ? (
-                        // 如果加载中，显示动画
-                        Array.from({ length: 5 }).map((_, index) => (
-                            <tr key={index} className="bg-[#29263A] border-t border-t-[#1E1C28] animate-pulse">
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
-                                    <div className="w-6 h-6 bg-gray-500 rounded-md"></div>
-                                </td>
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
-                                    <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
-                                </td>
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
-                                    <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
-                                </td>
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
-                                    <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
-                                </td>
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
-                                    <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        paginatedData.length > 0 ? (
-                            paginatedData.map(([coinType, coins], index) => {
-                                const coinObjectIds = coins.map((coin) => coin.data?.objectId || "N/A");
-                                const totalBalance = calculateTotalBalance(coins);
-                                const decimals = tokenDecimals[coinType] ?? 9;
-                                const formattedBalance = formatTokenBalance(
-                                    totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
-                                    decimals
-                                );
-                                const poolId = coinPoolMap[coinType];
+      <div className="mt-8">
+          {/* Token List Table */}
+          <div className="overflow-hidden rounded-lg bg-[#1F1B2D] border border-purple-600">
+              <table className="w-full text-left text-white border-collapse">
+                  <thead className="bg-[#29263A]">
+                  <tr>
+                      <th className="px-6 py-3 border-t border-t-[#1E1C28]" >#</th> {/* 序号 */}
+                      <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Token</th>
+                      <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Price</th>
+                      <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Total Balance</th>
+                      <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {isLoading ? (
+                    // 如果加载中，显示动画
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index} className="bg-[#29263A] border-t border-t-[#1E1C28] animate-pulse">
+                          <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                              <div className="w-6 h-6 bg-gray-500 rounded-md"></div>
+                          </td>
+                          <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                              <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
+                          </td>
+                          <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                              <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
+                          </td>
+                          <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                              <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
+                          </td>
+                          <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                              <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
+                          </td>
+                      </tr>
+                    ))
+                  ) : (
+                    paginatedData.length > 0 ? (
+                      paginatedData.map(([coinType, coins], index) => {
+                          const coinObjectIds = coins.map((coin) => coin.data?.objectId || "N/A");
+                          const totalBalance = calculateTotalBalance(coins);
+                          const decimals = tokenDecimals[coinType] ?? 9;
+                          const formattedBalance = formatTokenBalance(
+                            totalBalance.integer * BigInt(10 ** 9) + BigInt(totalBalance.decimal),
+                            decimals
+                          );
+                          const poolId = coinPoolMap[coinType];
 
-                                const cleanCoinType = coinType.replace(/^0x/, '');
-                                let coin_price_address = coinType;
-                                console.log(`coin_price_address: '${coin_price_address}'`); // 检查coin_price_address的实际值
+                          const cleanCoinType = coinType.replace(/^0x/, '');
+                          let coin_price_address = coinType;
 
-                                let target_address = "0x2::sui::SUI";
-                                console.log(`target_address_xiugaiqian: '${target_address}'`); // 确认目标地址
+                          let target_address = "0x2::sui::SUI";
 
-                                if (coin_price_address.trim() === target_address) { // 使用 trim() 去除潜在的空白字符
-                                    coin_price_address = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI";
-                                }
-                                console.log("rewrite",coin_price_address);
+                          if (coin_price_address.trim() === target_address) { // 使用 trim() 去除潜在的空白字符
+                              coin_price_address = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI";
+                          }
 
-                                let checknum = scamCoinChecknums[cleanCoinType] || 0;
-                                return (
-                                    <tr
-                                        key={index}
-                                        className={`${
-                                            index % 2 === 0 ? "bg-[#29263A]" : "bg-[#26223B]"
-                                        } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
-                                    >
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{index + 1}</td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" >
-                                            <div className="flex items-center">
-                                                <div className="font-bold text-purple-300 mr-2">{coinType.split("::").pop()}</div>
-                                                {checknum >= 3 && (
-                                                    <span className="text-red-500">
+                          let checknum = scamCoinChecknums[cleanCoinType] || 0;
+                          return (
+                            <tr
+                              key={index}
+                              className={`${
+                                index % 2 === 0 ? "bg-[#29263A]" : "bg-[#26223B]"
+                              } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
+                            >
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{index + 1}</td>
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" >
+                                    <div className="flex items-center">
+                                        <div className="font-bold text-purple-300 mr-2">{coinType.split("::").pop()}</div>
+                                        {checknum >= 3 && (
+                                          <span className="text-red-500">
                                                         <img src={warnCramImage} title="This may be a scam coin" alt="Warning" className="w-4 h-4 inline-block"/>
                                                     </span>
-                                                )}
-                                            </div>
-                                            <div
-                                                className="text-sm text-gray-400 cursor-pointer relative group"
-                                                onClick={() => handleCopyCoinType(coinType)}
-                                            >
-                                                <span>{`${formatCoinType(coinType)}`}</span>
-                                                {copiedCoinType === coinType && (
-                                                    <span className="ml-2 text-green-500">☑️</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] " style={{textAlign:"left"}}><GetCoinPrice coin={coin_price_address} /></td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{formattedBalance}</td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28]" style={{textAlign:"left"}}>
-                                            {demoNftId ? (
-                                                poolId ? (
-                                                    <Deposit
-                                                        coinType={coinType}
-                                                        poolId={poolId}
-                                                        coinObjects={coinObjectIds}
-                                                        demoNftId={demoNftId}
-                                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                        extraParam={TESTNET_TIME}
-                                                        onSuccess={refreshUserProfile}
-                                                    />
-                                                ) : (
-                                                    <New_pool
-                                                        crabPackageId={TESTNET_CRAB_PACKAGE_ID}
-                                                        coinType={coinType}
-                                                        coinObjects={coinObjectIds}
-                                                        poolTableId={TESTNET_POOLTABLE}
-                                                        demoNftId={demoNftId}
-                                                        transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
-                                                        extraParam={TESTNET_TIME}
-                                                        onSuccess={refreshUserProfile}
-                                                    />
-                                                )
-                                            ) : (
-                                                <div>
-                                                    <button
-                                                        className="mark-as-scam-button"
-                                                        onClick={() => setIsModalOpen(true)}
-                                                    >
-                                                        Recycle
-                                                    </button>
-                                                    {isModalOpen && (
-                                                        <NFTModal
-                                                            onClose={() => setIsModalOpen(false)}
-                                                            onSuccess={() => {
-                                                                refreshUserProfile();
-                                                                setIsModalOpen(false);
+                                        )}
+                                    </div>
+                                    <div
+                                      className="text-sm text-gray-400 cursor-pointer relative group"
+                                      onClick={() => handleCopyCoinType(coinType)}
+                                    >
+                                        <span>{`${formatCoinType(coinType)}`}</span>
+                                        {copiedCoinType === coinType && (
+                                          <span className="ml-2 text-green-500">☑️</span>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28] " style={{textAlign:"left"}}><GetCoinPrice coin={coin_price_address} /></td>
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{formattedBalance}</td>
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28]" style={{textAlign:"left"}}>
+                                    {demoNftId ? (
+                                      poolId ? (
+                                        <Deposit
+                                          coinType={coinType}
+                                          poolId={poolId}
+                                          coinObjects={coinObjectIds}
+                                          demoNftId={demoNftId}
+                                          transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                          extraParam={TESTNET_TIME}
+                                          onSuccess={refreshUserProfile}
+                                        />
+                                      ) : (
+                                        <New_pool
+                                          crabPackageId={TESTNET_CRAB_PACKAGE_ID}
+                                          coinType={coinType}
+                                          coinObjects={coinObjectIds}
+                                          poolTableId={TESTNET_POOLTABLE}
+                                          demoNftId={demoNftId}
+                                          transferRecordPoolId={TESTNET_TRANSFERRECORDPOOL}
+                                          extraParam={TESTNET_TIME}
+                                          onSuccess={refreshUserProfile}
+                                        />
+                                      )
+                                    ) : (
+                                      <div>
+                                          <button
+                                            className="mark-as-scam-button"
+                                            onClick={() => setIsModalOpen(true)}
+                                          >
+                                              Recycle
+                                          </button>
+                                          {isModalOpen && (
+                                            <NFTModal
+                                              onClose={() => setIsModalOpen(false)}
+                                              onSuccess={() => {
+                                                  refreshUserProfile();
+                                                  setIsModalOpen(false);
 
-                                                            }}
-                                                        />
-                                                    )}
-                                                </div>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        ) : (
-                            <tr>
-                                <td colSpan={4} className="px-6 py-4 text-center text-red-500">No tokens found</td>
+                                              }}
+                                            />
+                                          )}
+                                      </div>
+                                    )}
+                                </td>
                             </tr>
-                        )
-                    )}
-                    </tbody>
-                </table>
-            </div>
-            {/* 分页控件 */}
-            <div className="flex items-center justify-between mt-6">
-                <div className="flex items-center">
-                    <span className="text-white mr-4">Show:</span>
-                    <select
-                        className="px-4 py-2 rounded-lg border border-gray-700 bg-[#1F1B2D] text-white"
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                    >
-                        {[10, 20, 50].map((num) => (
-                            <option key={num} value={num}>
-                                {num}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="flex items-center">
-                    <span className="text-white mr-4">Total: {userObjects?.coins ? Object.entries(userObjects.coins).length : 0}</span>
-                </div>
-                <div className="flex items-center">
+                          );
+                      })
+                    ) : (
+                      <tr>
+                          <td colSpan={4} className="px-6 py-4 text-center text-red-500">No tokens found</td>
+                      </tr>
+                    )
+                  )}
+                  </tbody>
+              </table>
+          </div>
+          {/* 分页控件 */}
+          <div className="flex items-center justify-between mt-6">
+              <div className="flex items-center">
+                  <span className="text-white mr-4">Show:</span>
+                  <select
+                    className="px-4 py-2 rounded-lg border border-gray-700 bg-[#1F1B2D] text-white"
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  >
+                      {[10, 20, 50].map((num) => (
+                        <option key={num} value={num}>
+                            {num}
+                        </option>
+                      ))}
+                  </select>
+              </div>
+              <div className="flex items-center">
+                  <span className="text-white mr-4">Total: {userObjects?.coins ? Object.entries(userObjects.coins).length : 0}</span>
+              </div>
+              <div className="flex items-center">
+                  <button
+                    className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  >
+                      &lt;
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
-                        className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      key={page}
+                      className={`px-4 py-2 mx-1 text-white rounded-md ${
+                        currentPage === page
+                          ? "bg-purple-600"
+                          : "bg-[#29263A] hover:bg-[#444151]"
+                      }`}
+                      onClick={() => setCurrentPage(page)}
                     >
-                        &lt;
+                        {page}
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            className={`px-4 py-2 mx-1 text-white rounded-md ${
-                                currentPage === page
-                                    ? "bg-purple-600"
-                                    : "bg-[#29263A] hover:bg-[#444151]"
-                            }`}
-                            onClick={() => setCurrentPage(page)}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    <button
-                        className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                    >
-                        &gt;
-                    </button>
-                </div>
-            </div>
-        </div>
+                  ))}
+                  <button
+                    className="px-4 py-2 mx-1 text-white bg-purple-600 hover:bg-purple-700 rounded-md"
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  >
+                      &gt;
+                  </button>
+              </div>
+          </div>
+      </div>
     );
 }
