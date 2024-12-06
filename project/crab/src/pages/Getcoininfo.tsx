@@ -10,6 +10,8 @@ import { fetchPoolIdForCoin } from "../utils/poolHelpers"; // 导入 helper
 import { fetchTokenDecimals } from "../utils/tokenHelpers";
 import suiClient from "../cli/suiClient";
 import NFTModal from "../components/NFTModal";
+import GetCoinPrice from "../components/GetCoinPrice";
+
 
 export default function GetCoinInfo() {
     const account = useCurrentAccount();
@@ -171,9 +173,10 @@ export default function GetCoinInfo() {
                 <table className="w-full text-left text-white border-collapse">
                     <thead className="bg-[#29263A]">
                     <tr>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]">#</th> {/* 序号 */}
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]">Token</th>
-                        <th className="px-6 py-3 border-t border-t-[#1E1C28]">Total Balance</th>
+                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >#</th> {/* 序号 */}
+                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Token</th>
+                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Price</th>
+                        <th className="px-6 py-3 border-t border-t-[#1E1C28]" >Total Balance</th>
                         <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
                     </tr>
                     </thead>
@@ -194,6 +197,9 @@ export default function GetCoinInfo() {
                                 <td className="px-6 py-4 border-t border-t-[#1E1C28]">
                                     <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
                                 </td>
+                                <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                                    <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
+                                </td>
                             </tr>
                         ))
                     ) : (
@@ -209,6 +215,17 @@ export default function GetCoinInfo() {
                                 const poolId = coinPoolMap[coinType];
 
                                 const cleanCoinType = coinType.replace(/^0x/, '');
+                                let coin_price_address = coinType;
+                                console.log(`coin_price_address: '${coin_price_address}'`); // 检查coin_price_address的实际值
+
+                                let target_address = "0x2::sui::SUI";
+                                console.log(`target_address_xiugaiqian: '${target_address}'`); // 确认目标地址
+
+                                if (coin_price_address.trim() === target_address) { // 使用 trim() 去除潜在的空白字符
+                                    coin_price_address = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI";
+                                }
+                                console.log("rewrite",coin_price_address);
+
                                 let checknum = scamCoinChecknums[cleanCoinType] || 0;
                                 return (
                                     <tr
@@ -217,8 +234,8 @@ export default function GetCoinInfo() {
                                             index % 2 === 0 ? "bg-[#29263A]" : "bg-[#26223B]"
                                         } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
                                     >
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">{index + 1}</td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{index + 1}</td>
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" >
                                             <div className="flex items-center">
                                                 <div className="font-bold text-purple-300 mr-2">{coinType.split("::").pop()}</div>
                                                 {checknum >= 3 && (
@@ -237,8 +254,9 @@ export default function GetCoinInfo() {
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white">{formattedBalance}</td>
-                                        <td className="px-6 py-4 border-t border-t-[#1E1C28]">
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] " style={{textAlign:"left"}}><GetCoinPrice coin={coin_price_address} /></td>
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{formattedBalance}</td>
+                                        <td className="px-6 py-4 border-t border-t-[#1E1C28]" style={{textAlign:"left"}}>
                                             {demoNftId ? (
                                                 poolId ? (
                                                     <Deposit
