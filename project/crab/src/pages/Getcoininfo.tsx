@@ -11,6 +11,7 @@ import { fetchTokenDecimals } from "../utils/tokenHelpers";
 import suiClient from "../cli/suiClient";
 import NFTModal from "../components/NFTModal";
 import GetCoinPrice from "../components/GetCoinPrice";
+import GetCoinIcon from "../components/GetCoinIcon";
 
 
 export default function GetCoinInfo() {
@@ -232,23 +233,35 @@ export default function GetCoinInfo() {
                               } border-t border-t-[#1E1C28] hover:bg-[#444151]`}
                             >
                                 <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" style={{textAlign:"left"}}>{index + 1}</td>
-                                <td className="px-6 py-4 border-t border-t-[#1E1C28] text-white" >
+                                <td className="px-4 py-4 border-t border-t-[#1E1C28] text-white" >
                                     <div className="flex items-center">
-                                        <div className="font-bold text-purple-300 mr-2">{coinType.split("::").pop()}</div>
-                                        {checknum >= 3 && (
-                                          <span className="text-red-500">
-                                                        <img src={warnCramImage} title="This may be a scam coin" alt="Warning" className="w-4 h-4 inline-block"/>
-                                                    </span>
-                                        )}
+                                        <div className="mr-2" style={{width:24,height:24,borderRadius:50}}>
+                                            <GetCoinIcon coin_address={coinType} />
+                                        </div>
+                                    <div>
+                                        <div className="font-semibold text-purple-300">{coinType.split("::").pop()}
+                                            {checknum >= 3 && (
+                                                <img style={{margin:5}} src={warnCramImage} title="This may be a scam coin" alt="Warning" className="w-4 h-4 inline-block"/>
+                                            )}
+                                        </div>
+                                        <div className="text-xs text-gray-500" onClick={() => handleCopyCoinType(coinType)}>
+                                            <span>
+                                                {`${formatCoinType(coinType)}`}
+                                            </span>
+                                            {copiedCoinType === coinType && (
+                                                <span className="ml-2 text-green-500">☑️</span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div
-                                      className="text-sm text-gray-400 cursor-pointer relative group"
-                                      onClick={() => handleCopyCoinType(coinType)}
-                                    >
-                                        <span>{`${formatCoinType(coinType)}`}</span>
-                                        {copiedCoinType === coinType && (
-                                          <span className="ml-2 text-green-500">☑️</span>
-                                        )}
+                                    {/*<div*/}
+                                    {/*  className="text-sm text-gray-400 cursor-pointer relative group"*/}
+                                    {/*  onClick={() => handleCopyCoinType(coinType)}*/}
+                                    {/*>*/}
+                                    {/*    <span>{`${formatCoinType(coinType)}`}</span>*/}
+                                    {/*    {copiedCoinType === coinType && (*/}
+                                    {/*      <span className="ml-2 text-green-500">☑️</span>*/}
+                                    {/*    )}*/}
+                                    {/*</div>*/}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 border-t border-t-[#1E1C28] " style={{textAlign:"left"}}><GetCoinPrice coin={coin_price_address} /></td>
