@@ -19,7 +19,7 @@ const purpleTextStyle = {
 // 定义一个更大的字体大小样式
 const largeTitleStyle = {
   ...gradientStyle,
-  fontSize: "3.5rem", // 增大字体大小，可以根据需要调整
+  fontSize: "2.5rem", // 增大字体大小，可以根据需要调整
   lineHeight: 1.2 // 调整行高以适应新的字体大小
 };
 
@@ -66,7 +66,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="md:w-1/2">
             <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
+              <div className=" w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
                 <img src={icon3} alt="Decentralized Governance" />
               </div>
               <h3 className="text-xl font-semibold mb-2" style={gradientStyle}>Decentralized Governance</h3>
