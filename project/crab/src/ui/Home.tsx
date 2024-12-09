@@ -27,76 +27,101 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-cover bg-center" style={{ backgroundImage: "url('../assets/home/background.jpg')" }}>
-      <main className="container mx-auto flex flex-1 flex-col items-center justify-center lg:items-start mt-[168px]" style={{ paddingLeft: "20px" }}>
-        {/* 左侧文字 */}
-        <div className="flex flex-col space-y-6 items-start" style={{ maxWidth: "1200px" }}>
-          <h2 className="text-4xl lg:text-5xl font-bold leading-tight" style={gradientStyle}>
-            Clear Bad Assets,<br />
-            Unlock a Smarter Digital World
-          </h2>
-          <p className="text-lg" style={purpleTextStyle}>
-            Welcome to Crab – the Next.js Sui Dapp. Connect your wallet to explore your assets.
-          </p>
-          <button onClick={() => navigate("/dashboard")} className="flex items-center justify-center px-6 py-3 rounded-lg shadow-md font-semibold text-white transition duration-300" style={{ minWidth: "200px", height: "50px", background: "linear-gradient(90deg, #9B5EFA 0%, #704BDF 100%)", borderRadius: "12px" }}>
-            <span>LAUNCH APP</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 ml-2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5l6 6m0 0l-6 6m6-6H4.5" />
-            </svg>
-          </button>
-        </div>
-      </main>
+      <div className="bg-cover bg-center" style={{backgroundImage: "url('../assets/home/background.jpg')"}}>
+        <main className="container mx-auto flex flex-1 flex-col items-center justify-center lg:items-start mt-[168px]"
+              style={{paddingLeft: "20px"}}>
+          {/* 左侧文字 */}
+          <div className="flex flex-col space-y-6 items-start" style={{maxWidth: "1200px"}}>
+            <h2 className="text-4xl lg:text-5xl font-bold leading-tight" style={gradientStyle}>
+              Clear Bad Assets,<br/>
+              Unlock a Smarter Digital World
+            </h2>
+            <p className="text-lg" style={purpleTextStyle}>
+              Welcome to Crab – the Next.js Sui Dapp. Connect your wallet to explore your assets.
+            </p>
+            <button onClick={() => navigate("/dashboard")}
+                    className="flex items-center justify-center px-6 py-3 rounded-lg shadow-md font-semibold text-white transition duration-300"
+                    style={{
+                      minWidth: "200px",
+                      height: "50px",
+                      background: "linear-gradient(90deg, #9B5EFA 0%, #704BDF 100%)",
+                      borderRadius: "12px"
+                    }}>
+              <span>LAUNCH APP</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2}
+                   stroke="currentColor" className="w-6 h-6 ml-2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5l6 6m0 0l-6 6m6-6H4.5"/>
+              </svg>
+            </button>
+          </div>
+        </main>
 
-      <section className="mb-16 container mx-auto px-6">
-        <div style={{ marginTop: "20%", marginBottom: "10%" }}>
-          <h2 className="font-semibold text-center mb-8" style={largeTitleStyle}>Key Features to Keep You Safe</h2>
-        </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Container for Token Recycling and Decentralized Governance */}
-          <div style={{ marginLeft: "20%" }}>
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-                <img src={icon4} alt="Token Recycling" />
+        <section
+            className="mb-16 container mx-auto px-6 flex flex-col items-center"
+            style={{marginTop: "400px"}} // 直接添加 marginTop 属性
+        >
+          <div style={{marginTop: "5%", marginBottom: "5%", textAlign: "center"}}>
+            <h2 className="font-semibold mb-8" style={largeTitleStyle}>
+              Key Features to Keep You Safe
+            </h2>
+          </div>
+          <div className="flex flex-col md:flex-row gap-12 items-center justify-center">
+            {/* Token Recycling */}
+            <div className="text-center md:w-1/3">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center">
+                <img src={icon4} alt="Token Recycling"/>
               </div>
-              <h3 className="text-xl font-semibold mb-2" style={gradientStyle}>Token Recycling</h3>
-              <p style={purpleTextStyle}>
-                Turn losses into opportunities by recycling<br /> scam tokens and cleaning up the ecosystem.
+              <h3 className="text-xl font-semibold mb-2" style={gradientStyle}>
+                Token Recycling
+              </h3>
+              <p style={{...purpleTextStyle, lineHeight: 1.6}}>
+                Turn losses into opportunities by recycling scam tokens and cleaning up
+                the ecosystem.
+              </p>
+            </div>
+            {/* Decentralized Governance */}
+            <div className="text-center md:w-1/3">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center">
+                <img src={icon3} alt="Decentralized Governance"/>
+              </div>
+              <h3 className="text-xl font-semibold mb-2" style={gradientStyle}>
+                Decentralized Governance
+              </h3>
+              <p style={{...purpleTextStyle, lineHeight: 1.6}}>
+                Trust the process—community-driven decisions ensure fairness and
+                transparency.
               </p>
             </div>
           </div>
-          <div className="md:w-1/2">
-            <div className="text-center">
-              <div className=" w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-                <img src={icon3} alt="Decentralized Governance" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2" style={gradientStyle}>Decentralized Governance</h3>
-              <p style={purpleTextStyle}>
-                Trust the process—community-driven<br /> decisions ensure fairness and transparency.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section style={{ marginBottom: "10%", marginTop: "5%" }} className="flex flex-col md:flex-row items-center gap-8 container mx-auto px-6 mb-16">
-        <div style={{ width: 365, height: 274, marginLeft: "24%", marginTop: "5%" }} className="w-full md:w-1/2">
-          <img src={icon1} alt="Abstract technology visualization" className="rounded-lg shadow-lg" />
-        </div>
-        <div style={{ marginTop: "3%", marginLeft: "5%" }} className="w-full md:w-1/2">
-          <h2 className="text-2xl font-semibold mb-4" style={largeTitleStyle}>Who We Are</h2>
-          <p style={purpleTextStyle}>
-            Crab is a hackathon project incubated within<br />
-            the Sui Blockchain Ecosystem. As part of an<br />
-            innovative competition, our team came together<br />
-            to create a platform that identifies and recycles<br />
-            phishing tokens, contributing to a safer and<br />
-            more transparent digital asset space. We hope<br />
-            to create a safer and more transparent digital<br />
-            asset space.
-          </p>
-        </div>
-      </section>
-    </div>
+        <section className="container mx-auto px-6 mb-16 flex flex-col md:flex-row items-center gap-8 justify-center">
+          {/* 左侧图片 */}
+          <div className="w-full md:w-1/2 flex justify-end pr-8">
+            <img
+                src={icon1}
+                alt="Abstract technology visualization"
+                className="rounded-lg shadow-lg"
+                style={{width: "365px", height: "274px"}}
+            />
+          </div>
+          {/* 右侧文字 */}
+          <div className="w-full md:w-1/2 text-center md:text-left">
+            <h2 className="text-2xl font-semibold mb-4" style={largeTitleStyle}>
+              Who We Are
+            </h2>
+            <p style={{...purpleTextStyle, lineHeight: 1.8,width: "425px"}}>
+              Crab is a hackathon project incubated within the Sui Blockchain
+              Ecosystem. As part of an innovative competition, our team came together
+              to create a platform that identifies and recycles phishing tokens,
+              contributing to a safer and more transparent digital asset space. We hope
+              to create a safer and more transparent digital asset space.
+            </p>
+          </div>
+        </section>
+
+
+      </div>
   );
 };
 
