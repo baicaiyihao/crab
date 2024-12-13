@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-      <div className="bg-cover bg-center" style={{backgroundImage: "url('../assets/home/background.jpg')"}}>
+      <div className="bg-cover bg-center" style={{backgroundImage: "url('../assets/home/background.webp')"}}>
         <main className="container mx-auto flex flex-1 flex-col items-center justify-center lg:items-start mt-[168px]"
               style={{paddingLeft: "20px"}}>
           {/* 左侧文字 */}

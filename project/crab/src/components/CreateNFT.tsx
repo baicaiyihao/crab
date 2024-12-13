@@ -37,7 +37,6 @@ const CreateNFT: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) => {
 
             // 执行交易并等待结果
             const result = await signAndExecute({ transaction: tx });
-            console.log("Deposit transaction executed:", result);
 
             // 如果交易成功，调用回调函数
             if (result && !isError) {

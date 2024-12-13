@@ -180,7 +180,8 @@ const Pools: React.FC = () => {
                             let decimals = tokenDecimals[coinType];
                             if (decimals == null) {
                                 try {
-                                    decimals = await fetchTokenDecimals(suiClient, coinType);
+                                    const cointype = `0x${coinType}`;
+                                    decimals = await fetchTokenDecimals(suiClient, cointype);
                                     decimals = decimals ?? 2; // 默认精度为 2
                                 } catch (error) {
                                     console.error(`Error fetching decimals for ${coinType}:`, error);

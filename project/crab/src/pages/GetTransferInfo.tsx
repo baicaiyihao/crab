@@ -136,7 +136,6 @@ const GetTransferDetails = () => {
             const transferDetails = await fetchTransferRecords();
             setUserTransferDetails(transferDetails);
 
-            console.log("User Transfer Details (Unclaimed):", transferDetails);
         } catch (error) {
             console.error("Error fetching transfer info:", error);
         } finally {

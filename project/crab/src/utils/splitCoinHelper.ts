@@ -30,7 +30,6 @@ export async function handleSplitGas(
 
     // Ensure the coins are of type SUI
     const suiCoins = coins.data.filter((coin) => {
-        console.log("coinType:", coin.coinType);
         return coin.coinType === "0x2::sui::SUI";
     });
 
@@ -41,11 +40,9 @@ export async function handleSplitGas(
     if (suiCoins.length > 1) {
         // If there are multiple SUI objects, split from the first one
         const firstCoin = suiCoins[0];
-        console.log("Splitting SUI from non-Gas object:", firstCoin.coinObjectId);
         newCoin = tx.splitCoins(firstCoin.coinObjectId, [splitAmount]);
     } else {
         // If there's only one SUI object, split directly from tx.gas
-        console.log("Only one SUI object found. Splitting from tx.gas.");
         newCoin = tx.splitCoins(tx.gas, [splitAmount]);
     }
 

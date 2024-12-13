@@ -46,7 +46,6 @@ export default function AddMarkScam({ poolId, scamCoinId, coinType, demoNftId, o
             // 执行交易
             await signAndExecute({ transaction: tx });
 
-            console.log(tx);
             if (onSuccess) {
                 onSuccess(); // 成功后调用回调函数
             }
