@@ -36,7 +36,6 @@ const AddIcon: React.FC = () => {
 
             // 执行交易并等待结果
             const result = await signAndExecute({ transaction: tx });
-            console.log("Add Icon transaction executed:", result);
 
             // 如果交易成功，显示成功消息
             if (result && !isError) {

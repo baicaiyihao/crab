@@ -44,7 +44,6 @@ export default function MarkScam({ poolId, coinType, demoNftId, onSuccess }: Mar
             // 执行交易
             signAndExecute({transaction: tx});
 
-            console.log(tx);
             if (onSuccess) {
                 onSuccess(); // 成功后调用回调函数
             }

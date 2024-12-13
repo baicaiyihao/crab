@@ -136,7 +136,6 @@ const GetTransferDetails = () => {
             const transferDetails = await fetchTransferRecords();
             setUserTransferDetails(transferDetails);
 
-            console.log("User Transfer Details (Unclaimed):", transferDetails);
         } catch (error) {
             console.error("Error fetching transfer info:", error);
         } finally {
@@ -168,92 +167,99 @@ const GetTransferDetails = () => {
 
     return (
         <div className="mt-8">
-            <div className="overflow-hidden rounded-lg bg-[#1F1B2D] border border-purple-600">
-                <div className="overflow-x-auto bg-[#1F1B2D] rounded-lg border border-purple-600">
-                    <table className="w-full text-left text-white border-collapse">
-                        <thead className="bg-[#29263A]">
-                        <tr>
-                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">#</th>
-                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Token</th>
-                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Amount</th>
-                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Timestamp</th>
-                            <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {isLoading ? (
-                            // 加载动画
-                            Array.from({ length: 5 }).map((_, index) => (
-                                <tr key={index} className="bg-[#29263A] border-b animate-pulse">
-                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
-                                        <div className="w-12 h-6 bg-gray-500 rounded-md"></div>
-                                    </td>
-                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
-                                        <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
-                                    </td>
-                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
-                                        <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
-                                    </td>
-                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
-                                        <div className="w-40 h-6 bg-gray-500 rounded-md"></div>
-                                    </td>
-                                    <td className="px-6 py-3 border-t border-t-[#1E1C28]">
-                                        <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : paginatedData.length > 0 ? (
-                            paginatedData.map((detail) => (
-                                <tr key={detail.id} className="hover:bg-[#444151] border-t border-[#1E1C28]">
-                                    <td className="px-6 py-4 text-gray-400">{detail.index}</td>
-                                    <td className="px-6 py-4 text-gray-400">
-                                        <div className="text-purple-300 font-bold">
-                                            {detail.assetType}
-                                        </div>
-                                        <div
-                                            className="text-sm text-gray-400 cursor-pointer relative group"
-                                            onClick={() => handleCopy(detail.fullAssetType)}
-                                        >
-                                            <span className="">{`0x${formatCoinType(detail.fullAssetType)}`}</span>
-                                            {copiedAssetType === detail.fullAssetType && (
-                                                <span className="ml-2 text-green-500">☑️</span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-400">{detail.amount}</td>
-                                    <td className="px-6 py-4 text-gray-400">{detail.timestamp}</td>
-                                    <td className="px-6 py-4 text-gray-400">
-                                        {demoNftId ? (
-                                            detail.poolId ? (
-                                                <Withdraw
-                                                    transferInRecordObject={detail.id}
-                                                    coinType={detail.fullAssetType}
-                                                    transferRecordPoolId={detail.poolId}
-                                                    demoNftId={demoNftId}
-                                                    extraParam={TESTNET_TIME}
-                                                    onSuccess={fetchTransferInfo}
-                                                />
-                                            ) : (
-                                                <p className="text-red-500">No Pool Found</p>
-                                            )
-                                        ) : (
-                                            <p className="text-red-500">No DemoNFT found</p>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                                    No transfer records found.
-                                </td>
-                            </tr>
-                        )}
-                        </tbody>
-                    </table>
+            {!account?.address ? (
+                <div className="flex justify-center items-center h-32">
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <span className="block sm:inline">Please connect your wallet to view trash.</span>
+                    </div>
                 </div>
-            </div>
-
+            ) : (
+                <div className="overflow-hidden rounded-lg bg-[#1F1B2D] border border-purple-600">
+                    <div className="overflow-x-auto bg-[#1F1B2D] rounded-lg border border-purple-600">
+                        <table className="w-full text-left text-white border-collapse">
+                            <thead className="bg-[#29263A]">
+                            <tr>
+                                <th className="px-6 py-3 border-t border-t-[#1E1C28]">#</th>
+                                <th className="px-6 py-3 border-t border-t-[#1E1C28]">Token</th>
+                                <th className="px-6 py-3 border-t border-t-[#1E1C28]">Amount</th>
+                                <th className="px-6 py-3 border-t border-t-[#1E1C28]">Timestamp</th>
+                                <th className="px-6 py-3 border-t border-t-[#1E1C28]">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {isLoading ? (
+                                // 加载动画
+                                Array.from({ length: 5 }).map((_, index) => (
+                                    <tr key={index} className="bg-[#29263A] border-b animate-pulse">
+                                        <td className="px-6 py-3 border-t border-t-[#1E1C28]">
+                                            <div className="w-12 h-6 bg-gray-500 rounded-md"></div>
+                                        </td>
+                                        <td className="px-6 py-3 border-t border-t-[#1E1C28]">
+                                            <div className="w-24 h-6 bg-gray-500 rounded-md"></div>
+                                        </td>
+                                        <td className="px-6 py-3 border-t border-t-[#1E1C28]">
+                                            <div className="w-32 h-6 bg-gray-500 rounded-md"></div>
+                                        </td>
+                                        <td className="px-6 py-3 border-t border-t-[#1E1C28]">
+                                            <div className="w-40 h-6 bg-gray-500 rounded-md"></div>
+                                        </td>
+                                        <td className="px-6 py-3 border-t border-t-[#1E1C28]">
+                                            <div className="w-16 h-6 bg-gray-500 rounded-md"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : paginatedData.length > 0 ? (
+                                paginatedData.map((detail) => (
+                                    <tr key={detail.id} className="hover:bg-[#444151] border-t border-[#1E1C28]">
+                                        <td className="px-6 py-4 text-gray-400">{detail.index}</td>
+                                        <td className="px-6 py-4 text-gray-400">
+                                            <div className="text-purple-300 font-bold">
+                                                {detail.assetType}
+                                            </div>
+                                            <div
+                                                className="text-sm text-gray-400 cursor-pointer relative group"
+                                                onClick={() => handleCopy(detail.fullAssetType)}
+                                            >
+                                                <span className="">{`0x${formatCoinType(detail.fullAssetType)}`}</span>
+                                                {copiedAssetType === detail.fullAssetType && (
+                                                    <span className="ml-2 text-green-500">☑️</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-400">{detail.amount}</td>
+                                        <td className="px-6 py-4 text-gray-400">{detail.timestamp}</td>
+                                        <td className="px-6 py-4 text-gray-400">
+                                            {demoNftId ? (
+                                                detail.poolId ? (
+                                                    <Withdraw
+                                                        transferInRecordObject={detail.id}
+                                                        coinType={detail.fullAssetType}
+                                                        transferRecordPoolId={detail.poolId}
+                                                        demoNftId={demoNftId}
+                                                        extraParam={TESTNET_TIME}
+                                                        onSuccess={fetchTransferInfo}
+                                                    />
+                                                ) : (
+                                                    <p className="text-red-500">No Pool Found</p>
+                                                )
+                                            ) : (
+                                                <p className="text-red-500">No DemoNFT found</p>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                        No transfer records found.
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
             <div className="flex items-center justify-between mt-6">
                 <div className="flex items-center">
                     <span className="text-white mr-4">Show:</span>
