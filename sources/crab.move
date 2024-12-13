@@ -1,4 +1,4 @@
-module tabledemo::tabledemo;
+module crab::tabledemo;
 
 use std::string::utf8;
 use std::type_name::{get, TypeName};

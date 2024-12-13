@@ -64,7 +64,6 @@ export function Withdraw({
 
             // Execute the transaction and wait for the result
             const result = await signAndExecute({ transaction: tx });
-            console.log("Withdraw transaction executed:", result);
 
             // If the transaction was successful, trigger the success callback
             if (result && !isError) {
