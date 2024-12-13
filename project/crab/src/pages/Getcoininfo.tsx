@@ -109,6 +109,7 @@ export default function GetCoinInfo() {
             const coinTypes = Object.keys(profile.coins || {});
             for (const coinType of coinTypes) {
                 // 使用 helper 方法获取精度
+                console.log(coinType);
                 const decimals = await fetchTokenDecimals(suiClient, coinType);
                 setTokenDecimals(prev => ({ ...prev, [coinType]: decimals }));
 

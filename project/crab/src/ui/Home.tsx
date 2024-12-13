@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import icon4 from "../assets/home/ICON4.png";
-import icon3 from "../assets/home/ICON3.png";
-import icon1 from "../assets/home/ICON1.png";
+import icon4 from "../assets/home/ICON4.webp";
+import icon3 from "../assets/home/ICON3.webp";
+import icon1 from "../assets/home/ICON1.webp";
 
 const gradientStyle = {
   backgroundImage: "linear-gradient(90deg, #E3DFF4 0%, #D165FA 100%)",
@@ -65,7 +65,7 @@ const HomePage: React.FC = () => {
               Key Features to Keep You Safe
             </h2>
           </div>
-          <div className="flex flex-col md:flex-row gap-12 items-center justify-center">
+          <div className="flex flex-col md:flex-row gap-12 mb-48 items-center justify-center">
             {/* Token Recycling */}
             <div className="text-center md:w-1/3">
               <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center">
@@ -95,7 +95,7 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        <section className="container mx-auto px-6 mb-16 flex flex-col md:flex-row items-center gap-8 justify-center">
+        <section className="container mx-auto px-6 mb-72 flex flex-col md:flex-row items-center gap-8 justify-center">
           {/* 左侧图片 */}
           <div className="w-full md:w-1/2 flex justify-end pr-8">
             <img
