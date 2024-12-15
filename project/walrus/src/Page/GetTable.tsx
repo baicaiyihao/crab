@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import '../css/upload.css'
 
 interface DynamicField {
     name: string;
@@ -53,39 +54,49 @@ const QueryDynamicFieldsAndImages: React.FC = () => {
 
     return (
         <div>
-            <h1>Query Dynamic Fields and Images</h1>
+            <div style={{textAlign:"center"}}>
+                <h1 className="h1">Query Dynamic Fields and Images</h1>
+            </div>
+
             <div>
-                <label htmlFor="parent-id">Parent Object ID:</label>
+                <label className="lable" htmlFor="parent-id">Parent Object ID:</label>
                 <input
+                    className="inputbox"
                     type="text"
                     id="parent-id"
                     value={parentId}
                     onChange={(e) => setParentId(e.target.value)}
                     placeholder="Enter Parent Object ID"
                 />
-                <button onClick={fetchDynamicFields} disabled={!parentId || isLoading}>
-                    {isLoading ? "Loading..." : "Fetch"}
-                </button>
+                <div style={{textAlign: "center",marginBottom:"20%"}}>
+                    <button className="button" onClick={fetchDynamicFields} disabled={!parentId || isLoading}>
+                        {isLoading ? "Loading..." : "Fetch"}
+                    </button>
+                </div>
+
             </div>
 
             {error && <p className="error">{error}</p>}
 
             {dynamicFields.length > 0 && (
                 <div>
-                    <h2>Dynamic Fields</h2>
                     <ul>
                         {dynamicFields.map((field) => (
-                            <li key={field.objectId}>
+                            <li style={{marginTop:"20%"}} key={field.objectId}>
                                 <strong>Name:</strong> {field.name} <br />
                                 <strong>Type:</strong> {field.type} <br />
                                 <strong>Object ID:</strong> {field.objectId} <br />
                                 <strong>Image:</strong>
+                                <br/>
                                 {fieldImages[field.objectId] ? (
-                                    <img
-                                        src={fieldImages[field.objectId]}
-                                        alt={field.name}
-                                        style={{ maxWidth: "200px", marginTop: "10px" }}
-                                    />
+                                    <div style={{textAlign:"center"}}>
+                                        <img
+                                            src={fieldImages[field.objectId]}
+                                            alt={field.name}
+                                            style={{maxWidth: "200px", marginTop: "10px"}}
+                                        />
+                                    </div>
+
                                 ) : (
                                     "Loading..."
                                 )}
