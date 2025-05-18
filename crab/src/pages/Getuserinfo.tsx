@@ -10,8 +10,8 @@ const REFRESH_INTERVAL = 3000; // 每 3 秒刷新一次
 export default function Getuserinfo() {
     const account = useCurrentAccount();
     const [userObjects, setUserObjects] = useState<CategorizedObjects | null>(null);
-    const [hasDemoNFT, setHasDemoNFT] = useState(false);
-    const [demoNFTData, setDemoNFTData] = useState<any | null>(null);
+    const [hasProfile, setHasProfile] = useState(false);
+    const [ProfileData, setProfileData] = useState<any | null>(null);
 
     async function refreshUserProfile() {
         if (account?.address) {
@@ -19,15 +19,15 @@ export default function Getuserinfo() {
                 const profile = await getUserProfile(account.address);
                 setUserObjects(profile);
 
-                const demoNFT = Object.entries(profile.objects || {}).find(([objectType]) =>
-                    objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::demo::DemoNFT`)
+                const Profile = Object.entries(profile.objects || {}).find(([objectType]) =>
+                    objectType.includes(`${TESTNET_CRAB_PACKAGE_ID}::profile::Profile`)
                 );
 
-                if (demoNFT) {
-                    setHasDemoNFT(true);
-                    setDemoNFTData(demoNFT[1]);
+                if (Profile) {
+                    setHasProfile(true);
+                    setProfileData(Profile[1]);
                 } else {
-                    setHasDemoNFT(false);
+                    setHasProfile(false);
                 }
             } catch (error) {
                 console.error("Error fetching user profile:", error);
