@@ -1,0 +1,102 @@
+/* 弹窗容器 */
+.box {
+    box-sizing: border-box;
+    position: relative;
+    width: 500px; /* 弹窗宽度 */
+    max-height: 290px; /* 限制弹窗的最大高度 */
+    background: #230728;
+    border: 1px solid #6B1A8A;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 20px; /* 给上下左右统一的内边距 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 将按钮固定在底部 */
+    overflow-y: auto; /* 如果内容超出最大高度，允许滚动 */
+}
+
+/* 标题部分 */
+.title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 38px;
+    border-bottom: 1px solid #6B1A8A;
+}
+
+/* 标题文本 */
+.title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+/* 关闭按钮的样式 */
+.close-btn {
+    position: absolute;
+    width: 40px; /* 设置按钮宽度 */
+    height: 40px; /* 设置按钮高度 */
+    left: calc(100% - 50px); /* 设置按钮与右边的距离 */
+    top: 12px; /* 设置按钮距顶部的位置 */
+
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+
+/* 提示文字部分 */
+/* 提示文字部分 - 应用新的文字样式 */
+.message {
+    position: absolute;
+    width: 355px; /* 宽度改为355px */
+    height: 38px; /* 高度设置为48px */
+    left: calc(50% - 355px / 2 + 0.5px); /* 居中 */
+    top: calc(50% - 48px / 2 + 0.5px); /* 居中 */
+
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px; /* 或150%行高 */
+
+    display: flex;
+    align-items: center;
+
+    color: #AEAEAE;
+    text-align: center; /* 文字居中对齐 */
+    margin-bottom: 20px; /* 文字与按钮之间的间距 */
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 24px;
+    background: #9E20CF;
+    border-radius: 12px;
+    width: 160px; /* 按钮宽度 */
+    height: 42px;
+    cursor: pointer;
+    margin: 120px auto 0;
+}
+
+
+/* 按钮文本 */
+.button-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+/* 样式调整和间距 */
+.box .title-bar, .message, .button-container {
+    margin-bottom: 15px; /* 设置各部分之间适当的间距 */
+}
+
